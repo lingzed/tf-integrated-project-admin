@@ -34,10 +34,10 @@ public class CaptchaController
     @Resource(name = "captchaProducerMath")
     private Producer captchaProducerMath;
 
-    @Autowired
+    @Resource
     private RedisCache redisCache;
     
-    @Autowired
+    @Resource
     private ISysConfigService configService;
     /**
      * 生成验证码
