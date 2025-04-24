@@ -7,7 +7,7 @@ ruoyi:
   # 版权年份
   copyrightYear: 2025
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: D:/tf-integration-project-folder/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
@@ -19,7 +19,7 @@ server:
   port: 8080
   servlet:
     # 应用的访问路径
-    context-path: /
+    context-path: /tf
   tomcat:
     # tomcat的URI编码
     uri-encoding: UTF-8
@@ -93,7 +93,7 @@ token:
   # 令牌自定义标识
   header: Authorization
   # 令牌密钥
-  secret: abcdefghijklmnopqrstuvwxyz
+  secret: tf-integration-project_aksdpasda2323123-123doka
   # 令牌有效期（默认30分钟）
   expireTime: 30
 
