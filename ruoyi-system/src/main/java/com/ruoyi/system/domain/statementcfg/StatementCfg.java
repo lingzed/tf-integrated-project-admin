@@ -7,14 +7,15 @@ import java.util.Date;
  */
 public class StatementCfg {
     private String cfgId;   // 配置项的id
-    private String cfgCode; // 配置项的编码
+//    private String cfgCode; // 配置项的编码, 适配redis的key, 格式为 cfg:报表编码:公司编码:配置类型
     private String cfgDescription;  // 配置项的描述
     private String corpCode;    // 配置项所属的公司编码
-    private String statementName;   // 配置项所属的报表名称
+    private String statementCode;   // 配置项对应的报表的编码
+    private String statementName;   // 配置项对应的报表的名称
     private String cfgContent;   // 配置项的json内容
-    private Integer cfgType;    // 配置项的类型, 0: 行列头索引配置, 1: 工作表写入配置, 2: 查询配置, 3: 行列头映射数据集配置
-    private Date createTime;
-    private Date updateTime;
+    private Short cfgType;    // 配置项的类型, 0: 行列头索引配置, 1: 工作表写入配置, 2: 查询配置, 3: 行列头映射数据集配置
+    private Date createTime;    // 创建时间
+    private Date updateTime;    // 更新时间
 
     public String getCfgId() {
         return cfgId;
@@ -24,12 +25,11 @@ public class StatementCfg {
         this.cfgId = cfgId;
     }
 
+    /**
+     * 适配redis的key, 格式为 cfg:报表编码:公司编码:配置类型
+     */
     public String getCfgCode() {
-        return cfgCode;
-    }
-
-    public void setCfgCode(String cfgCode) {
-        this.cfgCode = cfgCode;
+        return String.format("cfg:%s:%s:%d", getStatementCode(), getCorpCode(), getCfgType());
     }
 
     public String getCfgDescription() {
@@ -48,6 +48,14 @@ public class StatementCfg {
         this.corpCode = corpCode;
     }
 
+    public String getStatementCode() {
+        return statementCode;
+    }
+
+    public void setStatementCode(String statementCode) {
+        this.statementCode = statementCode;
+    }
+
     public String getStatementName() {
         return statementName;
     }
@@ -64,11 +72,11 @@ public class StatementCfg {
         this.cfgContent = cfgContent;
     }
 
-    public Integer getCfgType() {
+    public Short getCfgType() {
         return cfgType;
     }
 
-    public void setCfgType(Integer cfgType) {
+    public void setCfgType(Short cfgType) {
         this.cfgType = cfgType;
     }
 
