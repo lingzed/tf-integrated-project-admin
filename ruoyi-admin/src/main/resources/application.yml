@@ -7,7 +7,7 @@ ruoyi:
   # 版权年份
   copyrightYear: 2025
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/tf-integration-project-folder/uploadPath
+  profile: E:/tf-integration-project-folder
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
@@ -70,7 +70,7 @@ spring:
     # 地址
     host: localhost
     # 端口，默认为6379
-    port: 6379
+    port: 9054
     # 数据库索引
     database: 0
     # 密码
