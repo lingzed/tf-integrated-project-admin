@@ -2,13 +2,17 @@
 spring:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
-        driverClassName: com.mysql.cj.jdbc.Driver
+#        driverClassName: com.mysql.cj.jdbc.Driver   # mysql驱动
+        driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver   # sqlserver驱动
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://localhost:3306/tf?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-                username: root
-                password: 1234
+#                url: jdbc:mysql://localhost:3306/tf?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:sqlserver://localhost:1433;databaseName=tf;encrypt=true;trustServerCertificate=true
+#                username: root
+                username: sa
+#                password: 1234
+                password: lwn114514
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
@@ -35,7 +39,8 @@ spring:
             # 配置一个连接在池中最大生存的时间，单位是毫秒
             maxEvictableIdleTimeMillis: 900000
             # 配置检测连接是否有效
-            validationQuery: SELECT 1 FROM DUAL
+#            validationQuery: SELECT 1 FROM DUAL    # oracle | mysql 的语法
+            validationQuery: SELECT 1     # sqlserver 语法
             testWhileIdle: true
             testOnBorrow: false
             testOnReturn: false
