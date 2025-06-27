@@ -1240,6 +1240,39 @@ exec sp_addextendedproperty 'MS_Description', N'更新者', 'SCHEMA', 'dbo', 'TA
 exec sp_addextendedproperty 'MS_Description', N'更新时间', 'SCHEMA', 'dbo', 'TABLE', 'gen_table_column', 'COLUMN',
      'update_time'
 
+-- ----------------------------
+-- 20、报表配置表
+-- ----------------------------
+-- 删除并重新创建 statement_cfg 表
+IF OBJECT_ID('statement_cfg', 'U') IS NOT NULL
+    DROP TABLE statement_cfg;
+
+CREATE TABLE statement_cfg (
+                               cfg_id          INT IDENTITY(1,1) NOT NULL ,
+                               cfg_code        NVARCHAR(50) NOT NULL ,
+                               cfg_description NVARCHAR(100) NULL ,
+                               corp_code       NVARCHAR(10) NOT NULL ,
+                               statement_code  NVARCHAR(50) NOT NULL ,
+                               statement_name  NVARCHAR(50) NOT NULL ,
+                               cfg_content     NVARCHAR(MAX) NOT NULL ,
+                               cfg_type        TINYINT NOT NULL ,
+                               create_time     DATETIME NOT NULL ,
+                               update_time     DATETIME NOT NULL ,
+                               PRIMARY KEY (cfg_id),
+                               UNIQUE (cfg_code)
+);
+
+exec sp_addextendedproperty 'MS_Description', N'报表生成的相关配置表', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg'
+exec sp_addextendedproperty 'MS_Description', N'配置id', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_id'
+exec sp_addextendedproperty 'MS_Description', N'配置的编码, 适配redis的key, 格式为 cfg:报表编码:公司编码:配置类型', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_code'
+exec sp_addextendedproperty 'MS_Description', N'配置的描述', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_description'
+exec sp_addextendedproperty 'MS_Description', N'配置所属的公司编码', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'corp_code'
+exec sp_addextendedproperty 'MS_Description', N'配置对应的报表的编码', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'statement_code'
+exec sp_addextendedproperty 'MS_Description', N'配置对应的报表的名称', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'statement_name'
+exec sp_addextendedproperty 'MS_Description', N'配置的内容', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_content'
+exec sp_addextendedproperty 'MS_Description', N'配置类型, 0: 行列头索引配置, 1: 工作表写入配置, 2: 查询配置, 3: 行列头映射数据集配置', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_type'
+exec sp_addextendedproperty 'MS_Description', N'创建时间', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'create_time'
+exec sp_addextendedproperty 'MS_Description', N'修改时间', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'update_time'
 
 
 
