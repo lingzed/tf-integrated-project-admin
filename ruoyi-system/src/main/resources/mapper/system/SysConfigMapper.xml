@@ -71,22 +71,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <insert id="insertConfig" parameterType="SysConfig">
         insert into sys_config (
-			<if test="configName != null and configName != '' ">config_name,</if>
-			<if test="configKey != null and configKey != '' ">config_key,</if>
-			<if test="configValue != null and configValue != '' ">config_value,</if>
-			<if test="configType != null and configType != '' ">config_type,</if>
-			<if test="createBy != null and createBy != ''">create_by,</if>
-			<if test="remark != null and remark != ''">remark,</if>
- 			create_time
+        <if test="configName != null and configName != '' ">config_name,</if>
+        <if test="configKey != null and configKey != '' ">config_key,</if>
+        <if test="configValue != null and configValue != '' ">config_value,</if>
+        <if test="configType != null and configType != '' ">config_type,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        create_time
         )values(
-			<if test="configName != null and configName != ''">#{configName},</if>
-			<if test="configKey != null and configKey != ''">#{configKey},</if>
-			<if test="configValue != null and configValue != ''">#{configValue},</if>
-			<if test="configType != null and configType != ''">#{configType},</if>
-			<if test="createBy != null and createBy != ''">#{createBy},</if>
-			<if test="remark != null and remark != ''">#{remark},</if>
- 			sysdate()
-		)
+        <if test="configName != null and configName != ''">#{configName},</if>
+        <if test="configKey != null and configKey != ''">#{configKey},</if>
+        <if test="configValue != null and configValue != ''">#{configValue},</if>
+        <if test="configType != null and configType != ''">#{configType},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        -- sysdate()
+        GETDATE()
+        )
     </insert>
 	 
     <update id="updateConfig" parameterType="SysConfig">
@@ -98,7 +99,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="configType != null and configType != ''">config_type = #{configType},</if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="remark != null">remark = #{remark},</if>
- 			update_time = sysdate()
+--  			update_time = sysdate()
+ 			update_time = GETDATE()
         </set>
         where config_id = #{configId}
     </update>

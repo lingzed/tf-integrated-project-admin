@@ -143,36 +143,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
- 		insert into sys_user(
- 			<if test="userId != null and userId != 0">user_id,</if>
- 			<if test="deptId != null and deptId != 0">dept_id,</if>
- 			<if test="userName != null and userName != ''">user_name,</if>
- 			<if test="nickName != null and nickName != ''">nick_name,</if>
- 			<if test="email != null and email != ''">email,</if>
- 			<if test="avatar != null and avatar != ''">avatar,</if>
- 			<if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
- 			<if test="sex != null and sex != ''">sex,</if>
- 			<if test="password != null and password != ''">password,</if>
- 			<if test="status != null and status != ''">status,</if>
- 			<if test="createBy != null and createBy != ''">create_by,</if>
- 			<if test="remark != null and remark != ''">remark,</if>
- 			create_time
- 		)values(
- 			<if test="userId != null and userId != ''">#{userId},</if>
- 			<if test="deptId != null and deptId != ''">#{deptId},</if>
- 			<if test="userName != null and userName != ''">#{userName},</if>
- 			<if test="nickName != null and nickName != ''">#{nickName},</if>
- 			<if test="email != null and email != ''">#{email},</if>
- 			<if test="avatar != null and avatar != ''">#{avatar},</if>
- 			<if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
- 			<if test="sex != null and sex != ''">#{sex},</if>
- 			<if test="password != null and password != ''">#{password},</if>
- 			<if test="status != null and status != ''">#{status},</if>
- 			<if test="createBy != null and createBy != ''">#{createBy},</if>
- 			<if test="remark != null and remark != ''">#{remark},</if>
- 			sysdate()
- 		)
-	</insert>
+        insert into sys_user(
+        <if test="userId != null and userId != 0">user_id,</if>
+        <if test="deptId != null and deptId != 0">dept_id,</if>
+        <if test="userName != null and userName != ''">user_name,</if>
+        <if test="nickName != null and nickName != ''">nick_name,</if>
+        <if test="email != null and email != ''">email,</if>
+        <if test="avatar != null and avatar != ''">avatar,</if>
+        <if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
+        <if test="sex != null and sex != ''">sex,</if>
+        <if test="password != null and password != ''">password,</if>
+        <if test="status != null and status != ''">status,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        create_time
+        )values(
+        <if test="userId != null and userId != ''">#{userId},</if>
+        <if test="deptId != null and deptId != ''">#{deptId},</if>
+        <if test="userName != null and userName != ''">#{userName},</if>
+        <if test="nickName != null and nickName != ''">#{nickName},</if>
+        <if test="email != null and email != ''">#{email},</if>
+        <if test="avatar != null and avatar != ''">#{avatar},</if>
+        <if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+        <if test="sex != null and sex != ''">#{sex},</if>
+        <if test="password != null and password != ''">#{password},</if>
+        <if test="status != null and status != ''">#{status},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        -- sysdate()
+        GETDATE()
+        )
+    </insert>
 	
 	<update id="updateUser" parameterType="SysUser">
  		update sys_user
@@ -189,7 +190,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="loginDate != null">login_date = #{loginDate},</if>
  			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
  			<if test="remark != null">remark = #{remark},</if>
- 			update_time = sysdate()
+--  			update_time = sysdate()
+ 			update_time = GETDATE()
  		</set>
  		where user_id = #{userId}
 	</update>
