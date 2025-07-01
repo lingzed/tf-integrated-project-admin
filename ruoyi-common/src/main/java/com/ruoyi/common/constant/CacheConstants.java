@@ -2,11 +2,10 @@ package com.ruoyi.common.constant;
 
 /**
  * 缓存的key 常量
- * 
+ *
  * @author ruoyi
  */
-public class CacheConstants
-{
+public class CacheConstants {
     /**
      * 登录用户 redis key
      */
@@ -41,4 +40,14 @@ public class CacheConstants
      * 登录账户密码错误次数 redis key
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * 报表配置缓存的key模板
+     */
+    public static final String STMT_CFG_KEY_TEMPLATE = "stmt_cfg:%s:%s:%d";
+
+    /**
+     * 报表配置缓存的key模板(含其他)
+     */
+    public static final String STMT_CFG_KEY_TEMPLATE_OTHER = "stmt_cfg:%s:%s:%d:%s";
 }
