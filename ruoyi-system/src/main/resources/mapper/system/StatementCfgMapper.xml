@@ -5,38 +5,53 @@
 <mapper namespace="com.ruoyi.system.mapper.StatementCfgMapper">
 
     <resultMap type="StatementCfg" id="StatementCfgResult">
-        <id     property="cfgId"      column="cfg_id"      />
-<!--        <result property="cfgCode"    column="cfg_code"    />-->
-        <result property="cfgDescription"     column="cfg_description"     />
-        <result property="corpCode"   column="corp_code"   />
-        <result property="statementCode"    column="statement_code"    />
-        <result property="statementName"      column="statement_name"      />
-        <result property="cfgContent"    column="cfg_content"    />
-        <result property="cfgType"      column="cfg_type"      />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateTime"    column="update_time"    />
+        <id property="cfgId" column="cfg_id"/>
+        <result property="cfgCode" column="cfg_code"/>
+        <result property="cfgDescription" column="cfg_description"/>
+        <result property="corpCode" column="corp_code"/>
+        <result property="statementCode" column="statement_code"/>
+        <result property="statementName" column="statement_name"/>
+        <result property="cfgContent" column="cfg_content"/>
+        <result property="contentJsonType" column="content_json_type"/>
+        <result property="cfgType" column="cfg_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
 
-    <!-- 通用字段 -->
-    <sql id="commonField">
+    <!-- id字段 -->
+    <sql id="idField">
         cfg_id
-        , cfg_code
+    </sql>
+
+    <!-- 除id、lock_version的字段 -->
+    <sql id="commonField">
+        cfg_code
         , cfg_description
         , corp_code
         , statement_code
         , statement_name
         , cfg_content
+        , content_json_type
         , cfg_type
         , create_time
         , update_time
     </sql>
 
+    <!-- lock_version字段 -->
+    <sql id="lvField">lock_version</sql>
+
+    <!-- 通用字段 -->
+    <sql id="allField">
+        <include refid="idField"/>
+        ,
+        <include refid="commonField"/>
+        ,
+        <include refid="lvField" />
+    </sql>
+
     <!-- 查询条件 -->
     <sql id="queryCondition">
         <where>
-            <if test="cfgId != null">
-                and cfg_id = #{cfgId}
-            </if>
             <if test="cfgCode != null and cfgCode != ''">
                 and cfg_code like concat('%', #{cfgCode}, '%')
             </if>
@@ -58,19 +73,13 @@
             <if test="cfgType != null">
                 and cfg_type = #{cfgType}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
-            </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
-            </if>
         </where>
     </sql>
 
     <!-- 条件分页查询，返回po -->
     <select id="selectByCondition" resultMap="StatementCfgResult">
         select
-        <include refid="commonField"/>
+        <include refid="allField"/>
         from statement_cfg
         <include refid="queryCondition"/>
         <if test="orderBy != null and orderBy != ''">
@@ -83,37 +92,60 @@
 
     <!-- 条件查询总数量 -->
     <select id="countByCondition" resultType="java.lang.Long">
-        select count(0) total from statement_cfg <include refid="queryCondition"/>
+        select count(0) total from statement_cfg
+        <include refid="queryCondition"/>
     </select>
 
     <!-- 查询所有 -->
     <select id="selectAll" resultMap="StatementCfgResult">
-        select <include refid="commonField"/> from statement_cfg
+        select
+        <include refid="allField"/>
+        from statement_cfg
     </select>
 
     <!-- 查询总数量 -->
     <select id="countAll" resultType="java.lang.Long">
-        select count(0) total from statement_cfg
+        select count(0) total
+        from statement_cfg
     </select>
 
     <!-- 通过id查询 -->
     <select id="selectById" resultMap="StatementCfgResult">
-        select <include refid="commonField"/> from statement_cfg where cfg_id = #{cfgId}
+        select
+        <include refid="allField"/>
+        from statement_cfg where cfg_id = #{cfgId}
+    </select>
+
+    <!-- 通过cfg_code查询 -->
+    <select id="selectByCfgCode" resultMap="StatementCfgResult">
+        select
+        <include refid="allField"/>
+        from statement_cfg where cfg_code = #{cfgCode}
+    </select>
+
+    <!-- 通过id列表查询 -->
+    <select id="selectByIds" resultMap="StatementCfgResult">
+        select
+        <include refid="allField"/>
+        from statement_cfg where cfg_id in
+        <foreach collection="idList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 
     <!-- 插入 -->
     <insert id="insert">
-        insert into statement_cfg values(
-            #{cfgId},
-            #{cfgCode},
-            #{cfgDescription},
-            #{corpCode},
-            #{statementCode},
-            #{statementName},
-            #{cfgContent},
-            #{cfgType},
-            #{createTime},
-            #{updateTime})
+        insert into statement_cfg(<include refid="commonField"/>) values(
+        #{cfgCode},
+        #{cfgDescription},
+        #{corpCode},
+        #{statementCode},
+        #{statementName},
+        #{cfgContent},
+        #{contentJsonType},
+        #{cfgType},
+        GETDATE(),
+        GETDATE())
     </insert>
 
     <!-- 批量插入 -->
@@ -127,6 +159,7 @@
             #{item.statementCode},
             #{item.statementName},
             #{item.cfgContent},
+            #{item.contentJsonType},
             #{item.cfgType},
             #{item.createTime},
             #{item.updateTime})
@@ -137,17 +170,13 @@
     <update id="update">
         update statement_cfg
         <set>
-            <if test="cfgCode != null and cfgCode != ''">cfg_code = #{cfgCode},</if>
             <if test="cfgDescription != null and cfgDescription != ''">cfg_description = #{cfgDescription},</if>
-            <if test="corpCode != null and corpCode != ''">corp_code = #{corpCode},</if>
-            <if test="statementCode != null and statementCode != ''">statement_code = #{statementCode},</if>
-            <if test="statementName != null and statementName != ''">statement_name = #{statementName},</if>
             <if test="cfgContent != null and cfgContent != ''">cfg_content = #{cfgContent},</if>
-            <if test="cfgType != null">cfg_type = #{cfgType},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="contentJsonType != null">content_json_type = #{contentJsonType},</if>
+            update_time = GETDATE(),
+            lock_version = lock_version + 1
         </set>
-        where cfg_id = #{cfgId}
+        where cfg_id = #{cfgId} and lock_version = #{lockVersion}
     </update>
 
     <!-- 批量更新 -->
@@ -156,14 +185,20 @@
             update statement_cfg
             <set>
                 <if test="item.cfgCode != null and item.cfgCode != ''">cfg_code = #{item.cfgCode},</if>
-                <if test="item.cfgDescription != null and item.cfgDescription != ''">cfg_description = #{item.cfgDescription},</if>
+                <if test="item.cfgDescription != null and item.cfgDescription != ''">cfg_description =
+                    #{item.cfgDescription},
+                </if>
                 <if test="item.corpCode != null and item.corpCode != ''">corp_code = #{item.corpCode},</if>
-                <if test="item.statementCode != null and item.statementCode != ''">statement_code = #{item.statementCode},</if>
-                <if test="item.statementName != null and item.statementName != ''">statement_name = #{item.statementName},</if>
+                <if test="item.statementCode != null and item.statementCode != ''">statement_code =
+                    #{item.statementCode},
+                </if>
+                <if test="item.statementName != null and item.statementName != ''">statement_name =
+                    #{item.statementName},
+                </if>
                 <if test="item.cfgContent != null and item.cfgContent != ''">cfg_content = #{item.cfgContent},</if>
+                <if test="item.contentJsonType != null">content_json_type = #{item.contentJsonType},</if>
                 <if test="item.cfgType != null">cfg_type = #{item.cfgType},</if>
-                <if test="item.createTime != null">create_time = #{item.createTime},</if>
-                <if test="item.updateTime != null">update_time = #{item.updateTime},</if>    
+                update_time = GETDATE()
             </set>
             where cfg_id = #{item.cfgId}
         </foreach>
