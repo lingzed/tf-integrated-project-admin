@@ -1264,7 +1264,7 @@ CREATE TABLE statement_cfg (
 
 exec sp_addextendedproperty 'MS_Description', N'报表生成的相关配置表', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg'
 exec sp_addextendedproperty 'MS_Description', N'配置id', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_id'
-exec sp_addextendedproperty 'MS_Description', N'配置的编码, 适配redis的key, 格式为 cfg:报表编码:公司编码:配置类型', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_code'
+exec sp_addextendedproperty 'MS_Description', N'配置的编码, 适配redis的key, 格式为 cfg:报表编码:公司编码:配置类型[:其他信息]', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_code'
 exec sp_addextendedproperty 'MS_Description', N'配置的描述', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'cfg_description'
 exec sp_addextendedproperty 'MS_Description', N'配置所属的公司编码', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'corp_code'
 exec sp_addextendedproperty 'MS_Description', N'配置对应的报表的编码', 'SCHEMA', 'dbo', 'TABLE', 'statement_cfg', 'COLUMN', 'statement_code'
