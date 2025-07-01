@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public class BaseQuery {
     @JsonIgnore
-    private Integer page;           // 当前页
+    private Integer pageNum;           // 当前页
     @JsonIgnore
     private Integer pageSize;       // 当前页展示条目
     @JsonIgnore
@@ -21,12 +21,12 @@ public class BaseQuery {
     private String orderBy;         // 排序sql
 
 
-    public Integer getPage() {
-        return page;
+    public Integer getPageNum() {
+        return pageNum;
     }
 
-    public void setPage(Integer page) {
-        this.page = page;
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
     }
 
     public Integer getPageSize() {
@@ -39,10 +39,10 @@ public class BaseQuery {
 
     /*分页起始索引*/
     public Integer getIndex() {
-        if (Objects.isNull(page) || Objects.isNull(pageSize)) {
+        if (Objects.isNull(pageNum) || Objects.isNull(pageSize)) {
             return null;
         }
-        return (page - 1) * pageSize;
+        return (pageNum - 1) * pageSize;
     }
 
     /*每页条目*/
