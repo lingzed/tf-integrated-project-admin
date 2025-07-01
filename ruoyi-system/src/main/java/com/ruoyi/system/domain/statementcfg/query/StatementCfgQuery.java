@@ -6,7 +6,6 @@ import java.util.Date;
  * 报表配置查询实体
  */
 public class StatementCfgQuery extends BaseQuery {
-	private Integer cfgId;
 	private String cfgCode;
 	private String cfgDescription;
 	private String corpCode;
@@ -14,16 +13,6 @@ public class StatementCfgQuery extends BaseQuery {
 	private String statementName;
 	private String cfgContent;
 	private Short cfgType;
-	private Date createTime;
-	private Date updateTime;
-
-	public Integer getCfgId() {
-		return cfgId;
-	}
-
-	public void setCfgId(Integer cfgId) {
-		this.cfgId = cfgId;
-	}
 
 	public String getCfgCode() {
 		return cfgCode;
@@ -79,21 +68,5 @@ public class StatementCfgQuery extends BaseQuery {
 
 	public void setCfgType(Short cfgType) {
 		this.cfgType = cfgType;
-	}
-
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
-	public Date getUpdateTime() {
-		return updateTime;
-	}
-
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
 	}
 }

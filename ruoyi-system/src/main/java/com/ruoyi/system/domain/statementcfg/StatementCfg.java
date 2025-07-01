@@ -7,15 +7,17 @@ import java.util.Date;
  */
 public class StatementCfg {
     private String cfgId;   // 配置项的id
-//    private String cfgCode; // 配置项的编码, 适配redis的key, 格式为 cfg:报表编码:公司编码:配置类型
+    private String cfgCode; // 配置的编码, 适配redis的key, 格式为 cfg:报表编码:公司编码:配置类型[:其他信息]
     private String cfgDescription;  // 配置项的描述
     private String corpCode;    // 配置项所属的公司编码
     private String statementCode;   // 配置项对应的报表的编码
     private String statementName;   // 配置项对应的报表的名称
     private String cfgContent;   // 配置项的json内容
+    private Short contentJsonType;  // 配置内容的json类型
     private Short cfgType;    // 配置项的类型, 0: 行列头索引配置, 1: 工作表写入配置, 2: 查询配置, 3: 行列头映射数据集配置
     private Date createTime;    // 创建时间
     private Date updateTime;    // 更新时间
+    private Integer lockVersion;    // 乐观锁
 
     public String getCfgId() {
         return cfgId;
@@ -25,11 +27,12 @@ public class StatementCfg {
         this.cfgId = cfgId;
     }
 
-    /**
-     * 适配redis的key, 格式为 cfg:报表编码:公司编码:配置类型
-     */
     public String getCfgCode() {
-        return String.format("cfg:%s:%s:%d", getStatementCode(), getCorpCode(), getCfgType());
+        return cfgCode;
+    }
+
+    public void setCfgCode(String cfgCode) {
+        this.cfgCode = cfgCode;
     }
 
     public String getCfgDescription() {
@@ -72,6 +75,14 @@ public class StatementCfg {
         this.cfgContent = cfgContent;
     }
 
+    public Short getContentJsonType() {
+        return contentJsonType;
+    }
+
+    public void setContentJsonType(Short contentJsonType) {
+        this.contentJsonType = contentJsonType;
+    }
+
     public Short getCfgType() {
         return cfgType;
     }
@@ -94,5 +105,13 @@ public class StatementCfg {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getLockVersion() {
+        return lockVersion;
+    }
+
+    public void setLockVersion(Integer lockVersion) {
+        this.lockVersion = lockVersion;
     }
 }
