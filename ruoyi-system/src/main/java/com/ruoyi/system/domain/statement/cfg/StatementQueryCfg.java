@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain.statementcfg;
+package com.ruoyi.system.domain.statement.cfg;
 
 import java.util.List;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain.statementcfg.vo;
+package com.ruoyi.system.domain.statement.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
