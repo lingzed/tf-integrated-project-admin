@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.StatementCfgMapper">
 
-    <resultMap type="StatementCfg" id="StatementCfgResult">
+    <resultMap type="com.ruoyi.system.domain.statement.po.StatementCfg" id="StatementCfgResult">
         <id property="cfgId" column="cfg_id"/>
         <result property="cfgCode" column="cfg_code"/>
         <result property="cfgDescription" column="cfg_description"/>

@@ -1,8 +1,8 @@
 package com.ruoyi.system.mapper;
 
-import com.ruoyi.system.domain.statementcfg.StatementCfg;
-import com.ruoyi.system.domain.statementcfg.dto.StatementCfgDto;
-import com.ruoyi.system.domain.statementcfg.query.StatementCfgQuery;
+import com.ruoyi.system.domain.statement.po.StatementCfg;
+import com.ruoyi.system.domain.statement.dto.StatementCfgDto;
+import com.ruoyi.system.domain.statement.query.StatementCfgQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
