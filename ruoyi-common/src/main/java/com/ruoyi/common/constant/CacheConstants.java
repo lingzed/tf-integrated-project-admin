@@ -43,11 +43,30 @@ public class CacheConstants {
 
     /**
      * 报表配置缓存的key模板
+     * 格式: stmt_cfg:报表编码:公司编码:报表配置类型编码
      */
     public static final String STMT_CFG_KEY_TEMPLATE = "stmt_cfg:%s:%s:%d";
 
     /**
      * 报表配置缓存的key模板(含其他)
+     * 格式: stmt_cfg:报表编码:公司编码:报表配置类型编码:other
      */
     public static final String STMT_CFG_KEY_TEMPLATE_OTHER = "stmt_cfg:%s:%s:%d:%s";
+
+    /**
+     * 报表配置缓存的key模板
+     * 格式: stmt_tpl:报表编码:公司编码
+     */
+    public static final String STMT_TPL_KEY_TEMPLATE = "stmt_tpl:%s:%s";
+
+    /**
+     * 报表配置缓存的key模板(含其他)
+     * 格式: stmt_tpl:报表编码:公司编码:other
+     */
+    public static final String STMT_TPL_KEY_TEMPLATE_OTHER = "stmt_tpl:%s:%s:%s";
+
+    /**
+     * 所有科目的 redis key
+     */
+    public static final String ALL_SUBJ_CACHE_KEY = "all_subj:";
 }
