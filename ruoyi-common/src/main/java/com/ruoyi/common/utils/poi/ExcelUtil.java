@@ -1897,4 +1897,21 @@ public class ExcelUtil<T>
         }
         return method;
     }
+
+    /**
+     * 列索引转列字母
+     * @param columnIndex
+     * @return
+     */
+    public static String getExcelColumnLetter(int columnIndex) {
+        StringBuilder columnName = new StringBuilder();
+
+        while (columnIndex >= 0) {
+            int remainder = columnIndex % 26;
+            columnName.insert(0, (char) ('A' + remainder));
+            columnIndex = (columnIndex / 26) - 1;
+        }
+
+        return columnName.toString();
+    }
 }
