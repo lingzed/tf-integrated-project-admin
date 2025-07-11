@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain.statementcfg;
+package com.ruoyi.system.domain.statement.po;
 
 import java.util.Date;
 
