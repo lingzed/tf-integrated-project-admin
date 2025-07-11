@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.system;
+package com.ruoyi.web.controller.system.statement;
 
 import com.ruoyi.common.constant.MsgConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -8,16 +8,16 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.statement.StatementCfgType;
 import com.ruoyi.common.enums.statement.StatementType;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.StmtCfgUtil;
+import com.ruoyi.common.utils.StmtRelatedUtil;
 import com.ruoyi.common.validated.group.Add;
 import com.ruoyi.common.validated.group.Edit;
-import com.ruoyi.system.domain.statementcfg.RowColHeadIndexCfg;
-import com.ruoyi.system.domain.statementcfg.StatementCfg;
-import com.ruoyi.system.domain.statementcfg.dto.StatementCfgDto;
-import com.ruoyi.system.domain.statementcfg.query.StatementCfgQuery;
-import com.ruoyi.system.domain.statementcfg.vo.StatementCfgVo;
-import com.ruoyi.system.domain.statementcfg.vo.StmtCfgTypeVo;
-import com.ruoyi.system.domain.statementcfg.vo.StmtTypeVo;
+import com.ruoyi.system.domain.statement.cfg.RowColHeadIndexCfg;
+import com.ruoyi.system.domain.statement.po.StatementCfg;
+import com.ruoyi.system.domain.statement.dto.StatementCfgDto;
+import com.ruoyi.system.domain.statement.query.StatementCfgQuery;
+import com.ruoyi.system.domain.statement.vo.StatementCfgVo;
+import com.ruoyi.system.domain.statement.vo.StmtCfgTypeVo;
+import com.ruoyi.system.domain.statement.vo.StmtTypeVo;
 import com.ruoyi.system.service.StatementCfgService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public class StatementCfgController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:config:query')")
     @GetMapping("/cache")
     public AjaxResult getStmtCfg(String corpCode) {
-        String key = StmtCfgUtil.getCfgCode(StatementType.GGS_GSF_SR_QK_TJB, StatementCfgType.ROW_COL_HEAD_INDEX_CFG, corpCode);
+        String key = StmtRelatedUtil.getCfgCode(StatementType.GGS_GSF_SR_QK_TJB, StatementCfgType.ROW_COL_HEAD_INDEX_CFG, corpCode);
         List<RowColHeadIndexCfg> cfgCacheList = statementCfgService.getListStmtCfgCache(key, RowColHeadIndexCfg.class);
         log.info("cache: {}", cfgCacheList);
         return success(cfgCacheList);
