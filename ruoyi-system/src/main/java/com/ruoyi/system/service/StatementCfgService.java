@@ -1,12 +1,10 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.common.enums.statement.StatementCfgType;
-import com.ruoyi.common.enums.statement.StatementType;
 import com.ruoyi.system.domain.PageBean;
-import com.ruoyi.system.domain.statementcfg.StatementCfg;
-import com.ruoyi.system.domain.statementcfg.dto.StatementCfgDto;
-import com.ruoyi.system.domain.statementcfg.query.StatementCfgQuery;
-import com.ruoyi.system.domain.statementcfg.vo.StatementCfgVo;
+import com.ruoyi.system.domain.statement.po.StatementCfg;
+import com.ruoyi.system.domain.statement.dto.StatementCfgDto;
+import com.ruoyi.system.domain.statement.query.StatementCfgQuery;
+import com.ruoyi.system.domain.statement.vo.StatementCfgVo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
