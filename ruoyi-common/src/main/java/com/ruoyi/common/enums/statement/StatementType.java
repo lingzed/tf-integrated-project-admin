@@ -19,14 +19,10 @@ public enum StatementType {
 
     private String statementCode;         // 报表编码
     private String statementName;         // 报表名称
-    private String statementDir;          // 报表模板的目录
-    private String templateFilename;  // 报表模板文件名称
 
     StatementType(String statementCode, String statementName) {
         this.statementCode = statementCode;
         this.statementName = statementName;
-        this.statementDir = statementName;
-        this.templateFilename = statementName + "-模板";
     }
 
     public String getStatementCode() {
@@ -37,15 +33,8 @@ public enum StatementType {
         return statementName;
     }
 
-    public String getStatementDir() {
-        return statementDir;
-    }
 
-    public String getTemplateFilename() {
-        return templateFilename;
-    }
-
-    public StatementType getByCode(String code) {
+    public static StatementType getByCode(String code) {
         for (StatementType type : StatementType.values()) {
             if (type.statementCode.equals(code)) {
                 return type;
