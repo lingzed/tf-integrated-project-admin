@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain.statementcfg.query;
+package com.ruoyi.system.domain.statement.query;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
