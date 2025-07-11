@@ -4,6 +4,10 @@ import com.ruoyi.common.enums.statement.StatementType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * 读取项目相关配置
  *
@@ -111,23 +115,36 @@ public class RuoYiConfig {
      * @return
      */
     public static String getStatementTempRootPath() {
-        return getProfile() + "/statement-template";
+        Path path = Paths.get(getProfile(), "statement-template");
+        return path.toAbsolutePath().toString();
     }
 
     /**
-     * 获取具体的报表模板的路径
+     * 获取生成的临时报表根目录
+     * @return
+     */
+    public static String getStatementGenRootPath(){
+        Path path = Paths.get(getProfile(), "statement-gen-temp");
+        return path.toAbsolutePath().toString();
+    }
+
+    /**
+     * 通过报表类型获取具体的报表模板的路径
+     * @param statementType
      * @return
      */
     public static String getStatementTempPath(StatementType statementType) {
-        return getStatementTempRootPath() + "/" + statementType.getStatementDir();
+        Path path = Paths.get(getStatementTempRootPath(), statementType.getStatementName());
+        return path.toAbsolutePath().toString();
     }
 
     /**
-     * 获取具体报表的数据模板的路径
+     * 通过报表类型获取具体报表的数据模板的路径
      * @param statementType
      * @return
      */
     public static String getStatementDataTempPath(StatementType statementType) {
-        return getStatementTempPath(statementType) + "/数据模板";
+        Path path = Paths.get(getStatementTempPath(statementType), "数据模板");
+        return path.toAbsolutePath().toString();
     }
 }
