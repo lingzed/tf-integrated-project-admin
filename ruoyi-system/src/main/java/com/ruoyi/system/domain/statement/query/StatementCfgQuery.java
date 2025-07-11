@@ -1,6 +1,4 @@
-package com.ruoyi.system.domain.statementcfg.query;
-
-import java.util.Date;
+package com.ruoyi.system.domain.statement.query;
 
 /**
  * 报表配置查询实体

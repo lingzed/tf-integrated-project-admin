@@ -1,7 +1,7 @@
-package com.ruoyi.system.domain.statementcfg.dto;
+package com.ruoyi.system.domain.statement.dto;
 
 import com.ruoyi.common.constant.MsgConstants;
-import com.ruoyi.common.utils.StmtCfgUtil;
+import com.ruoyi.common.utils.StmtRelatedUtil;
 import com.ruoyi.common.validated.group.Add;
 import com.ruoyi.common.validated.group.Edit;
 import com.ruoyi.common.validated.json.JsonCont;
@@ -32,7 +32,7 @@ public class StatementCfgDto {
     }
 
     public String getCfgCode() {
-        return StmtCfgUtil.getCfgCode(statementCode, cfgType, corpCode, other);
+        return StmtRelatedUtil.getCfgCode(statementCode, cfgType, corpCode, other);
     }
 
     public String getCfgDescription() {
