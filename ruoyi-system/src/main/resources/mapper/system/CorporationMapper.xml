@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CorporationMapper">
+    
+    <resultMap type="Corporation" id="corporationResult">
+    	<id     property="id"      column="id"      />
+        <result property="corpCode"    column="corp_code"    />
+        <result property="pCorpCode"     column="p_corp_code"     />
+        <result property="corpName"   column="corp_name"   />
+    </resultMap>
+
+    <!-- id字段 -->
+    <sql id="idField">id</sql>
+
+    <!-- 除id外字段 -->
+    <sql id="withoutIdField">
+        corp_code
+        , p_corp_code
+        , corp_name
+    </sql>
+
+    <!-- 所有字段 -->
+    <sql id="allField">
+        <include refid="idField" />, <include refid="withoutIdField" />
+    </sql>
+
+    <!-- 通过corp_code查询 -->
+    <select id="selectByCode" resultMap="corporationResult">
+        select <include refid="allField" /> from corporation where corp_code = #{corpCode}
+    </select>
+    
+</mapper>
