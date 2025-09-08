@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.KhDzCfgMapper">
+
+    <sql id="commonFields">
+        cfg_code
+        ,cfg_content
+    </sql>
+
+    <sql id="commonSelect">
+        select
+        <include refid="commonFields"/>
+        form khdz_cfg
+    </sql>
+
+    <!-- 通过code查询 -->
+    <select id="selectByCode" resultType="java.lang.String">
+        select cfg_content
+        from khdz_cfg
+        where cfg_code = #{cfg_code}
+    </select>
+</mapper>

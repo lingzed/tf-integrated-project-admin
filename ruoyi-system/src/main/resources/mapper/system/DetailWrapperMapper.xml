@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DetailWrapperMapper">
+
+    <resultMap id="DetailWrapperMapping" type="com.ruoyi.common.u8c.warpper.DetailWrapper">
+        <result column="prepareddate" property="date" />
+        <result column="gl_book_code" property="gBookCode" />
+        <result column="nov" property="no" />
+        <result column="detailindex" property="detailindex" />
+        <result column="ctr_code" property="ctrCode" />
+        <result column="ctr_name" property="ctrName" />
+        <result column="job_pjt_code" property="jobPjtCode" />
+        <result column="job_pjt_name" property="jobPjtName" />
+        <result column="explanation" property="explanation" />
+        <result column="subjcode" property="accsubj_code" />
+        <result column="localdebitamount" property="localdebitamount" />
+        <result column="localcreditamount" property="localcreditamount" />
+    </resultMap>
+
+    <!-- 客户对账的凭证查询 -->
+    <select id="select" resultMap="DetailWrapperMapping">
+        select v.prepareddate,
+        g.glorgbookcode as gl_book_code,
+        d.nov,
+        d.detailindex,
+        MAX(case when f.checktype = '00010000000000000073' then f.valuecode end) as ctr_code,
+        MAX(case when f.checktype = '00010000000000000073' then f.valuename end) as ctr_name,
+        MAX(case when f.checktype = '0001F810000000000QAM' then f.valuecode end) as job_pjt_code,
+        MAX(case when f.checktype = '0001F810000000000QAM' then f.valuename end) as job_pjt_name,
+        d.explanation,
+        s.subjcode,
+        d.localdebitamount,
+        d.localcreditamount
+        from gl_voucher v
+        join bd_glorgbook g
+        on v.pk_glorgbook = g.pk_glorgbook
+        join gl_detail d
+        on v.pk_voucher = d.pk_voucher
+        join bd_accsubj s
+        on s.pk_accsubj = d.pk_accsubj
+        left join gl_freevalue f
+        on d.assid = f.freevalueid
+        <where>
+            v.voucherkind not in (2, 255)
+            and v.dr = 0
+            and g.glorgbookcode in
+            <foreach collection="glBookCodes" item="glBookCode" open="(" close=")" separator=",">
+                #{glBookCode}
+            </foreach>
+            and v.prepareddate between #{startDate} and #{endDate}
+            and f.checktype in ('00010000000000000073', '0001F810000000000QAM')
+            and s.subjcode in
+            <foreach collection="subjCodes" item="code" open="(" close=")" separator=",">
+                #{code}
+            </foreach>
+            group by v.prepareddate, g.glorgbookcode, d.nov, d.detailindex, d.explanation, s.subjcode, s.subjcode,
+            d.localdebitamount,
+            d.localcreditamount
+            having MAX(case when f.checktype = '00010000000000000073' then f.valuename end) like concat('%',#{ctrName},'%')
+            <if test="jobPjtName != null and jobPjtName != ''">
+                and MAX(case when f.checktype = '0001F810000000000QAM' then f.valuename end) = like concat('%',#{jobPjtName},'%')
+            </if>
+        </where>
+        order by v.prepareddate, d.nov, d.detailindex;
+    </select>
+</mapper>
