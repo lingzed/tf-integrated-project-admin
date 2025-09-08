@@ -12,7 +12,6 @@ public class MsgConstants {
     public static final String UNKNOWN_STMT_CFG_TYPE_V1 = "未知的报表配置类型";
     public static final String UNKNOWN_STMT_CFG_TYPE = UNKNOWN_STMT_CFG_TYPE_V1 + ": %d";
     public static final String STMT_CFG_CODE_EXIST = "配置项编码已存在: %s";
-    public static final String CORP_CODE_REQUIRED = "公司编码不能为空";
     public static final String STMT_CODE_REQUIRED = "报表编码不能为空";
     public static final String UNKNOWN_STMT_CODE = "未知的报表编码";
     public static final String UNKNOWN_STMT_CODE_V1 = UNKNOWN_STMT_CODE + ": %s";
@@ -28,8 +27,12 @@ public class MsgConstants {
     public static final String ERROR_ID = "错误ID";
     public static final String ID_NOT_EXIST = "ID【%s】不存在";
     public static final String UPDATE_FAILED = "更新失败，请重试";
+
+    // 公司编码
+    public static final String CORP_CODE_REQUIRED = "公司编码不能为空";
     public static final String CORP_CODE_NOT_EXISTS = "公司编码不存在";
     public static final String CORP_CODE_NOT_EXISTS_V1 = CORP_CODE_NOT_EXISTS + ": 【%s】";
+
     public static final String STMT_TPL_FILENAME_REQUIRED = "报表模板文件名为空";
     public static final String STMT_TPL_OUT_FILENAME_REQUIRED = "报表模板输出文件名为空";
     public static final String STMT_TPL_CACHE_KEY_EXISTS = "报表模板文件编码已存在";
@@ -46,7 +49,12 @@ public class MsgConstants {
     public static final String CACHE_STMT_FILE_NAME_NOT_EXISTS = "缓存的报表文件名不存在";
     public static final String RC_HEAD_MAP_DATA_IS_EMPTY = "行列头映射数据集为空";
     public static final String PERIOD_REQUIRED = "期间不能为空";
+    public static final String PERIOD_START_TO_END_REQUIRED = "起始期间或结束期间不能为空";
     public static final String STMT_TPL_FILE_SUFFIX_NOT_EXCEL = "模板文件只支持 [xls, xlsx] 格式";
     public static final String EDIT_FILENAME_REQUIRED = "更新的文件名不能为空";
     public static final String EDIT_FILENAME_SUFFIX_NOT_EQUALS_ORIGINAL = "更新的文件名后缀与上传的文件后缀不一致";
+    public static final String USER_NOT_EXISTS = "用户不存在";
+    public static final String PWD_LEN_BETWEEN_6_AND_24 = "密码长度必须是6-24位";
+    public static final String PWD_CHECK_FAIL = "密码必须包含数字、大小写字母和特殊字符任意3种";
+    public static final String CTR_NAME_REQUIRED = "客户名称不能为空";
 }

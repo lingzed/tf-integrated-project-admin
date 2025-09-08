@@ -60,9 +60,12 @@ public class CbJzStmtExtractor extends BaseStmtExtractor implements ValueExtract
             BigDecimal initCreditLocAmount = ab.getInitCreditLocAmount();   // 期初贷方
             BigDecimal initBalance = bdSubtract(initDebitLocAmount, initCreditLocAmount);   // 期初数
             BigDecimal debitLocAmount = currBalance(ab, SubjDirection.DEBIT); // 本期借
+            BigDecimal bqd = currBalance(ab, SubjDirection.CREDIT); // 本期贷
+            BigDecimal val = bdSubtract(debitLocAmount, bqd);   // 本期借-本期贷
 
             mergeBigDecimal(aRow1, subjCode, initBalance);
-            mergeBigDecimal(aRow2, subjCode, debitLocAmount);
+//            mergeBigDecimal(aRow2, subjCode, debitLocAmount);
+            mergeBigDecimal(aRow2, subjCode, val);
         });
 
         int rowI = 3;

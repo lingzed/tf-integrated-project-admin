@@ -16,23 +16,37 @@ import java.nio.file.Paths;
 @Component
 @ConfigurationProperties(prefix = "ruoyi")
 public class RuoYiConfig {
-    /** 项目名称 */
+    /**
+     * 项目名称
+     */
     private String name;
 
-    /** 版本 */
+    /**
+     * 版本
+     */
     private String version;
 
-    /** 版权年份 */
+    /**
+     * 版权年份
+     */
     private String copyrightYear;
 
-    /** 上传路径 */
+    /**
+     * 上传路径
+     */
     private static String profile;
 
-    /** 获取地址开关 */
+    /**
+     * 获取地址开关
+     */
     private static boolean addressEnabled;
 
-    /** 验证码类型 */
+    /**
+     * 验证码类型
+     */
     private static String captchaType;
+
+    private static InitCache initCache;
 
     public String getName() {
         return name;
@@ -112,6 +126,7 @@ public class RuoYiConfig {
 
     /**
      * 获取报表模板跟路径
+     *
      * @return
      */
     public static String getStatementTempRootPath() {
@@ -121,15 +136,17 @@ public class RuoYiConfig {
 
     /**
      * 获取生成的临时报表根目录
+     *
      * @return
      */
-    public static String getStatementGenRootPath(){
+    public static String getStatementGenRootPath() {
         Path path = Paths.get(getProfile(), "statement-gen-temp");
         return path.toAbsolutePath().toString();
     }
 
     /**
      * 通过报表类型获取具体的报表模板的路径
+     *
      * @param statementType
      * @return
      */
@@ -140,11 +157,49 @@ public class RuoYiConfig {
 
     /**
      * 通过报表类型获取具体报表的数据模板的路径
+     *
      * @param statementType
      * @return
      */
     public static String getStatementDataTempPath(StatementType statementType) {
         Path path = Paths.get(getStatementTempPath(statementType), "数据模板");
         return path.toAbsolutePath().toString();
+    }
+
+    public static String getKhDzdTempPath() {
+        String statementGenRootPath = getStatementGenRootPath();
+        return "C:\\Users\\ling\\Desktop\\客户对账单.xlsx";
+    }
+
+    /**
+     * 初始化缓存
+     */
+    public static class InitCache {
+        private static Boolean initStmtCfg; // 初始化报表配置缓存
+        private static Boolean initSubj;    // 初始化科目缓存
+
+        public static Boolean getInitStmtCfg() {
+            return initStmtCfg;
+        }
+
+        public void setInitStmtCfg(Boolean initStmtCfg) {
+            InitCache.initStmtCfg = initStmtCfg;
+        }
+
+        public static Boolean getInitSubj() {
+            return initSubj;
+        }
+
+        public void setInitSubj(Boolean initSubj) {
+            InitCache.initSubj = initSubj;
+        }
+    }
+
+    public static InitCache getInitCache() {
+        return initCache;
+    }
+
+    public void setInitCache(InitCache initCache) {
+        RuoYiConfig.initCache = initCache;
     }
 }

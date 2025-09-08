@@ -22,8 +22,7 @@ import com.ruoyi.framework.web.service.TokenService;
  * @author ruoyi
  */
 @Component
-public class JwtAuthenticationTokenFilter extends OncePerRequestFilter
-{
+public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private TokenService tokenService;
 
@@ -34,6 +33,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter
         LoginUser loginUser = tokenService.getLoginUser(request);
         if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication()))
         {
+            // 校验token
             tokenService.verifyToken(loginUser);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

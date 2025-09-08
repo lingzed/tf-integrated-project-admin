@@ -15,7 +15,9 @@ public enum StatementType {
     RG_CB_TJB("RG_CB_TJB", "人工成本统计表"),
     YS_ZK_HKL("YS_ZK_HKL", "应收账款回款率"),
     YS_ZX_QK_JKB("YS_ZX_QK_JKB", "预算执行情况监控表"),
-    ZN_BM_QSB("ZN_BM_QSB", "职能部门取数表");
+    ZN_BM_QSB("ZN_BM_QSB", "职能部门取数表"),
+    SY_FJB("SY_FJB", "损益分解表"),
+    YB("YB", "月报");
 
     private String statementCode;         // 报表编码
     private String statementName;         // 报表名称

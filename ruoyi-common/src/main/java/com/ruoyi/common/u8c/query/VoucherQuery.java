@@ -2,6 +2,9 @@ package com.ruoyi.common.u8c.query;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * 凭证查询实体
  */
@@ -17,7 +20,7 @@ public class VoucherQuery {
     @JSONField(ordinal = 5)
     private Integer page_size;
     @JSONField(ordinal = 6)
-    private String subjcode;
+    private Set<String> subjcode;
 
     public String getPk_glorgbook() {
         return pk_glorgbook;
@@ -59,11 +62,11 @@ public class VoucherQuery {
         this.page_size = page_size;
     }
 
-    public String getSubjcode() {
+    public Set<String> getSubjcode() {
         return subjcode;
     }
 
-    public void setSubjcode(String subjcode) {
+    public void setSubjcode(Set<String> subjcode) {
         this.subjcode = subjcode;
     }
 }

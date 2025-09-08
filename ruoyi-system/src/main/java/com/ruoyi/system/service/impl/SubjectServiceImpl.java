@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class SubjectServiceImpl implements SubjectService {
     private static final Logger log = LoggerFactory.getLogger(SubjectServiceImpl.class);
     private static final ReentrantLock lock = new ReentrantLock();
-    @Resource
+    @Resource(name = "requestThreadPoolExecutor")
     private ThreadPoolTaskExecutor executor;
     @Resource
     private RedisCache redisCache;

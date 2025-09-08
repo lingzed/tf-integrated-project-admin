@@ -1,9 +1,6 @@
 package com.ruoyi.common.u8c.warpper;
 
-import com.ruoyi.common.constant.PeriodConstants;
-import com.ruoyi.common.u8c.AuxBalance;
 import com.ruoyi.common.u8c.Detail;
-import com.ruoyi.common.u8c.Voucher;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +44,16 @@ public class DetailDataWrapper implements ByPeriodWrapper<Detail> {
     }
 
     @Override
+    public void setPeriod1(List<Detail> list) {
+        detailListMap.put(ByPeriodWrapper.PERIOD_1, list);
+    }
+
+    @Override
+    public List<Detail> getPeriod1() {
+        return detailListMap.get(ByPeriodWrapper.PERIOD_1);
+    }
+
+    @Override
     public void setPreYearSamePeriod(List<Detail> list) {
         detailListMap.put(ByPeriodWrapper.PRE_YEAR_SAME_PERIOD, list);
     }
@@ -54,5 +61,45 @@ public class DetailDataWrapper implements ByPeriodWrapper<Detail> {
     @Override
     public List<Detail> getPreYearSamePeriod() {
         return detailListMap.get(ByPeriodWrapper.PRE_YEAR_SAME_PERIOD);
+    }
+
+    @Override
+    public void setFirstPeriodToCurr(List<Detail> list) {
+        detailListMap.put(ByPeriodWrapper.FIRST_PERIOD_TO_CURR, list);
+    }
+
+    @Override
+    public List<Detail> getFirstPeriodToCurr() {
+        return detailListMap.get(ByPeriodWrapper.FIRST_PERIOD_TO_CURR);
+    }
+
+    @Override
+    public void setPreYearFirstToCurr(List<Detail> list) {
+        detailListMap.put(ByPeriodWrapper.PRE_YEAR_FIRST_TO_CURR, list);
+    }
+
+    @Override
+    public List<Detail> getPreYearFirstToCurr() {
+        return detailListMap.get(ByPeriodWrapper.PRE_YEAR_FIRST_TO_CURR);
+    }
+
+    @Override
+    public List<Detail> getPreYear() {
+        return detailListMap.get(ByPeriodWrapper.PRE_YEAR);
+    }
+
+    @Override
+    public void setPPreYear(List<Detail> list) {
+        detailListMap.put(ByPeriodWrapper.P_PRE_YEAR, list);
+    }
+
+    @Override
+    public List<Detail> getPPreYear() {
+        return detailListMap.get(ByPeriodWrapper.P_PRE_YEAR);
+    }
+
+    @Override
+    public void setPreYear(List<Detail> list) {
+        detailListMap.put(ByPeriodWrapper.PRE_YEAR, list);
     }
 }

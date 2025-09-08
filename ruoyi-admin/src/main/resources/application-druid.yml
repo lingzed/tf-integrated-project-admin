@@ -13,13 +13,20 @@ spring:
                 username: sa
 #                password: 1234
                 password: lwn114514
+#                password: cdrg@2020
+            # U8Cloud数据库
+            db-u8cloud:
+                enabled: true
+                url: jdbc:sqlserver://localhost:1433;databaseName=U8Cloud;encrypt=true;trustServerCertificate=true
+                username: sa
+                password: lwn114514
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
                 enabled: false
                 url: 
                 username: 
-                password: 
+                password:
             # 初始连接数
             initialSize: 5
             # 最小连接池数量

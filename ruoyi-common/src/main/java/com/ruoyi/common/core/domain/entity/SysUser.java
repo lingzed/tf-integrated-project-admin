@@ -89,6 +89,10 @@ public class SysUser extends BaseEntity
     /** 角色ID */
     private Long roleId;
 
+    private Corporation corporation;    // 公司
+
+    private Integer corpId;
+
     public SysUser()
     {
 
@@ -295,6 +299,22 @@ public class SysUser extends BaseEntity
     public void setRoleId(Long roleId)
     {
         this.roleId = roleId;
+    }
+
+    public Corporation getCorporation() {
+        return corporation;
+    }
+
+    public void setCorporation(Corporation corporation) {
+        this.corporation = corporation;
+    }
+    @Min(1)
+    public Integer getCorpId() {
+        return corpId;
+    }
+
+    public void setCorpId(Integer corpId) {
+        this.corpId = corpId;
     }
 
     @Override

@@ -69,4 +69,9 @@ public class CacheConstants {
      * 所有科目的 redis key
      */
     public static final String ALL_SUBJ_CACHE_KEY = "all_subj:";
+
+    /**
+     * SSE临时票据的 redis key
+     */
+    public static final String SSE_TICKET_CACHE_KEY = "sse:ticket:";
 }

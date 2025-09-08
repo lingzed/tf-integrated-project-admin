@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.system.statement;
 
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.constant.MsgConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -11,6 +13,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StmtRelatedUtil;
 import com.ruoyi.common.validated.group.Add;
 import com.ruoyi.common.validated.group.Edit;
+import com.ruoyi.system.domain.PageBean;
 import com.ruoyi.system.domain.statement.cfg.RowColHeadIndexCfg;
 import com.ruoyi.system.domain.statement.po.StatementCfg;
 import com.ruoyi.system.domain.statement.dto.StatementCfgDto;
@@ -19,6 +22,7 @@ import com.ruoyi.system.domain.statement.vo.StatementCfgVo;
 import com.ruoyi.system.domain.statement.vo.StmtCfgTypeVo;
 import com.ruoyi.system.domain.statement.vo.StmtTypeVo;
 import com.ruoyi.system.service.StatementCfgService;
+import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,8 +41,8 @@ import java.util.stream.Stream;
  */
 @RestController
 @RequestMapping("/stmt-cfg")
+@PreAuthorize("@ss.hasAnyRoles('admin,gAdmin')")
 public class StatementCfgController extends BaseController {
-    private static final Logger log = LoggerFactory.getLogger(StatementCfgController.class);
 
     @Resource
     private StatementCfgService statementCfgService;
@@ -52,7 +56,6 @@ public class StatementCfgController extends BaseController {
      * @param cfgType
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('system:config:query')")
     @GetMapping
     public TableDataInfo loadCfgList(String corpCode, String statementName, Short cfgType) {
         startPage();
@@ -60,23 +63,23 @@ public class StatementCfgController extends BaseController {
         query.setCorpCode(corpCode);
         query.setStatementName(statementName);
         query.setCfgType(cfgType);
-        List<StatementCfgVo> voList = statementCfgService.findVoListByCondition(query);
-        return getDataTable(voList);
+        List<StatementCfg> list = statementCfgService.findListByCondition(query);
+        long total = new PageInfo(list).getTotal();
+        return getDataTable(statementCfgService.toVoList(list), total);
     }
 
-    /**
-     * 获取报表配置
-     * @param corpCode
-     * @return
-     */
-    @PreAuthorize("@ss.hasPermi('system:config:query')")
-    @GetMapping("/cache")
-    public AjaxResult getStmtCfg(String corpCode) {
-        String key = StmtRelatedUtil.getCfgCode(StatementType.GGS_GSF_SR_QK_TJB, StatementCfgType.ROW_COL_HEAD_INDEX_CFG, corpCode);
-        List<RowColHeadIndexCfg> cfgCacheList = statementCfgService.getListStmtCfgCache(key, RowColHeadIndexCfg.class);
-        log.info("cache: {}", cfgCacheList);
-        return success(cfgCacheList);
-    }
+//    /**
+//     * 获取报表配置
+//     * @param corpCode
+//     * @return
+//     */
+//    @GetMapping("/cache")
+//    public AjaxResult getStmtCfg(String corpCode) {
+//        String key = StmtRelatedUtil.getCfgCode(StatementType.GGS_GSF_SR_QK_TJB, StatementCfgType.ROW_COL_HEAD_INDEX_CFG, corpCode);
+//        List<RowColHeadIndexCfg> cfgCacheList = statementCfgService.getListStmtCfgCache(key, RowColHeadIndexCfg.class);
+//        log.info("cache: {}", cfgCacheList);
+//        return success(cfgCacheList);
+//    }
 
     /**
      * 添加报表配置
@@ -171,7 +174,7 @@ public class StatementCfgController extends BaseController {
     @GetMapping("synchronized/{cfgCode}")
     public AjaxResult synchronizedCache(@PathVariable String cfgCode) {
         StatementCfg byCfgCode = statementCfgService.findByCfgCode(cfgCode);
-        if (byCfgCode == null){
+        if (byCfgCode == null) {
             throw new ServiceException(MsgConstants.STMT_CFG_NOT_EXISTS);
         }
         redisCache.setCacheStr(cfgCode, byCfgCode.getCfgContent());

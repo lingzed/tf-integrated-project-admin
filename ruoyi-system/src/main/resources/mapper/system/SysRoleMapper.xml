@@ -29,6 +29,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	        left join sys_user u on u.user_id = ur.user_id
 	        left join sys_dept d on u.dept_id = d.dept_id
     </sql>
+
+	<sql id="selectRoleVoTopOne">
+		select distinct TOP 1 r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly,
+						r.status, r.del_flag, r.create_time, r.remark
+		from sys_role r
+				 left join sys_user_role ur on ur.role_id = r.role_id
+				 left join sys_user u on u.user_id = ur.user_id
+				 left join sys_dept d on u.dept_id = d.dept_id
+	</sql>
     
     <select id="selectRoleList" parameterType="SysRole" resultMap="SysRoleResult">
 		<include refid="selectRoleVo"/>
@@ -84,13 +93,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="checkRoleNameUnique" parameterType="String" resultMap="SysRoleResult">
-		<include refid="selectRoleVo"/>
-		 where r.role_name=#{roleName} and r.del_flag = '0' limit 1
+<!--		<include refid="selectRoleVo"/>-->
+<!--		 where r.role_name=#{roleName} and r.del_flag = '0' limit 1-->
+		<include refid="selectRoleVoTopOne"/>
+		where r.role_name=#{roleName} and r.del_flag = '0'
 	</select>
 	
 	<select id="checkRoleKeyUnique" parameterType="String" resultMap="SysRoleResult">
-		<include refid="selectRoleVo"/>
-		 where r.role_key=#{roleKey} and r.del_flag = '0' limit 1
+<!--		<include refid="selectRoleVo"/>-->
+<!--		 where r.role_key=#{roleKey} and r.del_flag = '0' limit 1-->
+		<include refid="selectRoleVoTopOne"/>
+		where r.role_key=#{roleKey} and r.del_flag = '0'
 	</select>
 	
  	<insert id="insertRole" parameterType="SysRole" useGeneratedKeys="true" keyProperty="roleId">
@@ -117,7 +130,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="status != null and status != ''">#{status},</if>
         <if test="remark != null and remark != ''">#{remark},</if>
         <if test="createBy != null and createBy != ''">#{createBy},</if>
-        -- sysdate()
+        <!-- sysdate() -->
         GETDATE()
         )
     </insert>
@@ -134,7 +147,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="status != null and status != ''">status = #{status},</if>
  			<if test="remark != null">remark = #{remark},</if>
  			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
---  			update_time = sysdate()
+<!--  			update_time = sysdate() -->
  			update_time = GETDATE()
  		</set>
  		where role_id = #{roleId}

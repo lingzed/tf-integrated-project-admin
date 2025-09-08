@@ -18,6 +18,8 @@ import com.ruoyi.system.service.StatementCfgService;
 import com.ruoyi.system.service.statement.StatementReadService;
 import com.ruoyi.system.service.statement.StatementWriteService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +35,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @Component
 public class GgsGsfSrQkTjStmtGen extends StatementGenProcess {
+    private static final Logger log = LoggerFactory.getLogger(GgsGsfSrQkTjStmtGen.class);
     @Resource
     private StatementReadService statementReadService;
     @Resource
@@ -41,7 +44,7 @@ public class GgsGsfSrQkTjStmtGen extends StatementGenProcess {
     private StatementCfgService statementCfgService;
     @Resource
     private GgsGsfSrQkTjStmtExtractor ggsGsfSrQkTjStmtExtractor;
-    @Resource
+    @Resource(name = "requestThreadPoolExecutor")
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
 
@@ -81,8 +84,10 @@ public class GgsGsfSrQkTjStmtGen extends StatementGenProcess {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         rcHeadIndexMap.forEach((corp, rcHead) -> {
             CompletableFuture<Void> future = CompletableFuture
-                    .supplyAsync(() -> fetch(corp, rcHead, gt2025, period, lastPeriod), threadPoolTaskExecutor)
-                    .thenAccept(data -> result.put(corp, data));
+                    .runAsync(() -> {
+                        FinancialDataWrapper dataWrapper = fetch(corp, rcHead, gt2025, period, lastPeriod);
+                        result.put(corp, dataWrapper);
+                    }, threadPoolTaskExecutor);
             futures.add(future);
         });
 
@@ -98,8 +103,6 @@ public class GgsGsfSrQkTjStmtGen extends StatementGenProcess {
     }
 
     private FinancialDataWrapper fetch(String corp, RowColHeadIndex rcHead, Boolean gt2025, String period, String lastPeriod) {
-        FinancialDataWrapper financialDataWrapper = new FinancialDataWrapper();
-
         // 解析出部门列表和科目列表
         Set<String> subjSet = new HashSet<>();
         Set<String> deptSet = new HashSet<>();
@@ -110,35 +113,22 @@ public class GgsGsfSrQkTjStmtGen extends StatementGenProcess {
                 deptSet.add(split[1]);
             }
         });
-
         List<AssVo> assVoList = getAssVoList(rcHead.getColHeadIdx().keySet(), deptSet);
 
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        FinancialDataWrapper financialDataWrapper = new FinancialDataWrapper();
         AuxBalanceDataWrapper auxBalanceDataWrapper = new AuxBalanceDataWrapper();
         // 上年同期的，24年没有数据，所以不请求
         if (gt2025) {
-            CompletableFuture<Void> future = CompletableFuture
-                    .supplyAsync(() -> U8CApiUtil.queryAuxBalance(corp, lastPeriod, lastPeriod, subjSet, assVoList),
-                            threadPoolTaskExecutor)
-                    .thenAccept(abList -> {
-                        if (CollectionUtils.isNotEmpty(abList)) {
-                            auxBalanceDataWrapper.setPreYearSamePeriod(abList); // 上年同期
-                        }
-                    });
-            futures.add(future);
+            List<AuxBalance> abList = U8CApiUtil.queryAuxBalance(corp, lastPeriod, lastPeriod, subjSet, assVoList);
+            if (CollectionUtils.isNotEmpty(abList)) {
+                auxBalanceDataWrapper.setPreYearSamePeriod(abList); // 上年同期
+            }
         }
         // 本年本期的
-        CompletableFuture<Void> future = CompletableFuture
-                .supplyAsync(() -> U8CApiUtil.queryAuxBalance(corp, period, period, subjSet, assVoList),
-                        threadPoolTaskExecutor)
-                .thenAccept(abList -> {
-                    if (CollectionUtils.isNotEmpty(abList)) {
-                        auxBalanceDataWrapper.setCurrPeriod(abList);    // 本期
-                    }
-                });
-        futures.add(future);
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[]{})).join();
-
+        List<AuxBalance> abList = U8CApiUtil.queryAuxBalance(corp, period, period, subjSet, assVoList);
+        if (CollectionUtils.isNotEmpty(abList)) {
+            auxBalanceDataWrapper.setCurrPeriod(abList);    // 本期
+        }
         financialDataWrapper.setAuxBalanceDataWrapper(auxBalanceDataWrapper);
         return financialDataWrapper;
     }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.CorporationMapper">
-    
+
     <resultMap type="Corporation" id="corporationResult">
-    	<id     property="id"      column="id"      />
-        <result property="corpCode"    column="corp_code"    />
-        <result property="pCorpCode"     column="p_corp_code"     />
-        <result property="corpName"   column="corp_name"   />
+        <id property="id" column="id"/>
+        <result property="corpCode" column="corp_code"/>
+        <result property="pCorpCode" column="p_corp_code"/>
+        <result property="corpName" column="corp_name"/>
     </resultMap>
 
     <!-- id字段 -->
@@ -23,12 +23,101 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!-- 所有字段 -->
     <sql id="allField">
-        <include refid="idField" />, <include refid="withoutIdField" />
+        <include refid="idField"/>,
+        <include refid="withoutIdField"/>
     </sql>
 
     <!-- 通过corp_code查询 -->
     <select id="selectByCode" resultMap="corporationResult">
-        select <include refid="allField" /> from corporation where corp_code = #{corpCode}
+        select
+        <include refid="allField"/>
+        from corporation where corp_code = #{corpCode}
     </select>
-    
+
+    <!-- 通过corp_code列表查询总数 -->
+    <select id="countByCorpCodes" resultType="java.lang.Long">
+        select count(0) total from corporation where corp_code in
+        <foreach collection="corpCodes" item="corpCode" open="(" close=")" separator=",">
+            #{corpCode}
+        </foreach>
+    </select>
+
+    <!-- 通过公司级次选择 -->
+    <select id="selectByCorpLevel" resultMap="corporationResult">
+        select
+        <include refid="allField"/>
+        from corporation
+        <where>
+            <if test="corpLevel != null and corpLevel == 0">
+                corp_code &lt;&gt; 'A'
+            </if>
+            <if test="corpLevel != null and corpLevel == 1">
+                corp_code &lt;&gt; 'A' and p_corp_code = 'A'
+            </if>
+            <if test="corpLevel != null and corpLevel == 2">
+                corp_code &lt;&gt; 'A' and corp_type = 2
+            </if>
+        </where>
+    </select>
+
+    <!-- 通过用户id和公司级次查询，关联user_corporation_select -->
+    <select id="selectByUserIdAndCorpLevel" resultMap="corporationResult">
+        select
+        c.id id, c.corp_code corp_code, c.p_corp_code p_corp_code, c.corp_name corp_name
+        from corporation c
+        left join user_corporation_select ucs
+        on c.id = ucs.corp_id
+        <where>
+            ucs.user_id = #{userId}
+            <if test="corpLevel != null and corpLevel == 0">
+                and c.corp_code &lt;&gt; 'A'
+            </if>
+            <if test="corpLevel != null and corpLevel == 1">
+                and c.corp_code &lt;&gt; 'A' and c.p_corp_code = 'A'
+            </if>
+            <if test="corpLevel != null and corpLevel == 2">
+                and c.corp_code &lt;&gt; 'A' and c.corp_type = 2
+            </if>
+        </where>
+    </select>
+
+    <!-- 添加用户的公司选项 -->
+    <insert id="insertCorpOption">
+        insert into user_corporation_select (user_id, corp_id)
+        values
+        <foreach collection="corpId" item="id" separator=",">
+            (#{userId}, #{id})
+        </foreach>
+    </insert>
+
+    <!-- 通过用户id查询选项的公司id -->
+    <select id="selectOptionByUserId" resultType="java.lang.Integer">
+        select corp_id
+        from user_corporation_select
+        where user_id = #{userId}
+    </select>
+
+    <!-- 删除公司选项 -->
+    <delete id="deleteOption">
+        delete user_corporation_select where user_id = #{userId} and corp_id in
+        <foreach collection="corpId" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 通过id列表查询 -->
+    <select id="selectByIDList" resultMap="corporationResult">
+        select
+        <include refid="allField"/>
+        from corporation where id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectAll" resultMap="corporationResult">
+        select
+        <include refid="allField"/>
+        from corporation
+    </select>
 </mapper>

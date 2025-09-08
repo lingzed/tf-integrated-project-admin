@@ -23,7 +23,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"     column="update_by"    />
         <result property="updateTime"   column="update_time"  />
         <result property="remark"       column="remark"       />
+		<result property="corpId"       column="corp_id"       />
         <association property="dept"    javaType="SysDept"         resultMap="deptResult" />
+		<association property="corporation" javaType="Corporation" resultMap="corpResult" />
         <collection  property="roles"   javaType="java.util.List"  resultMap="RoleResult" />
     </resultMap>
 	
@@ -36,6 +38,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="leader"    column="leader"      />
         <result property="status"    column="dept_status" />
     </resultMap>
+
+	<resultMap id="corpResult" type="Corporation">
+		<id     property="id"    column="corp_id"     />
+		<result property="corpCode"  column="corp_code"   />
+		<result property="pCorpCode"  column="p_corp_code"   />
+		<result property="corpName" column="corp_name"   />
+	</resultMap>
 	
     <resultMap id="RoleResult" type="SysRole">
         <id     property="roleId"       column="role_id"        />
@@ -49,16 +58,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<sql id="selectUserVo">
         select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, 
         d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.status as dept_status,
-        r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
+        r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status,
+        c.id corp_id, c.corp_code, c.p_corp_code, c.corp_name
         from sys_user u
 		    left join sys_dept d on u.dept_id = d.dept_id
 		    left join sys_user_role ur on u.user_id = ur.user_id
 		    left join sys_role r on r.role_id = ur.role_id
+        	left join corporation c on u.corp_id = c.id
     </sql>
     
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
-		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader from sys_user u
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader,
+		c.id corp_id, c.corp_code, c.p_corp_code, c.corp_name
+		from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
+		left join  corporation c on u.corp_id = c.id
 		where u.del_flag = '0'
 		<if test="userId != null and userId != 0">
 			AND u.user_id = #{userId}
@@ -131,15 +145,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="checkUserNameUnique" parameterType="String" resultMap="SysUserResult">
-		select user_id, user_name from sys_user where user_name = #{userName} and del_flag = '0' limit 1
+<!-- 		select user_id, user_name from sys_user where user_name = #{userName} and del_flag = '0' limit 1 -->
+		select TOP 1 user_id, user_name from sys_user where user_name = #{userName} and del_flag = '0'
 	</select>
 	
 	<select id="checkPhoneUnique" parameterType="String" resultMap="SysUserResult">
-		select user_id, phonenumber from sys_user where phonenumber = #{phonenumber} and del_flag = '0' limit 1
+<!-- 		select user_id, phonenumber from sys_user where phonenumber = #{phonenumber} and del_flag = '0' limit 1-->
+		select TOP 1 user_id, phonenumber from sys_user where phonenumber = #{phonenumber} and del_flag = '0'
 	</select>
 	
 	<select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult">
-		select user_id, email from sys_user where email = #{email} and del_flag = '0' limit 1
+<!-- 		select user_id, email from sys_user where email = #{email} and del_flag = '0' limit 1 -->
+		select TOP 1 user_id, email from sys_user where email = #{email} and del_flag = '0'
 	</select>
 	
 	<insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
@@ -156,6 +173,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="status != null and status != ''">status,</if>
         <if test="createBy != null and createBy != ''">create_by,</if>
         <if test="remark != null and remark != ''">remark,</if>
+		<if test="corpId != null">corp_id,</if>
         create_time
         )values(
         <if test="userId != null and userId != ''">#{userId},</if>
@@ -170,27 +188,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="status != null and status != ''">#{status},</if>
         <if test="createBy != null and createBy != ''">#{createBy},</if>
         <if test="remark != null and remark != ''">#{remark},</if>
-        -- sysdate()
+		<if test="corpId != null">#{corpId},</if>
+		<!-- sysdate() -->
         GETDATE()
         )
     </insert>
-	
-	<update id="updateUser" parameterType="SysUser">
- 		update sys_user
- 		<set>
- 			<if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
- 			<if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
- 			<if test="email != null ">email = #{email},</if>
- 			<if test="phonenumber != null ">phonenumber = #{phonenumber},</if>
- 			<if test="sex != null and sex != ''">sex = #{sex},</if>
- 			<if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
- 			<if test="password != null and password != ''">password = #{password},</if>
- 			<if test="status != null and status != ''">status = #{status},</if>
- 			<if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
- 			<if test="loginDate != null">login_date = #{loginDate},</if>
- 			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
- 			<if test="remark != null">remark = #{remark},</if>
---  			update_time = sysdate()
+
+    <update id="updateUser" parameterType="SysUser">
+         update sys_user
+         <set>
+             <if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
+             <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+             <if test="email != null ">email = #{email},</if>
+             <if test="phonenumber != null ">phonenumber = #{phonenumber},</if>
+             <if test="sex != null and sex != ''">sex = #{sex},</if>
+             <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+             <if test="password != null and password != ''">password = #{password},</if>
+             <if test="status != null and status != ''">status = #{status},</if>
+             <if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
+             <if test="loginDate != null">login_date = #{loginDate},</if>
+             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+             <if test="remark != null">remark = #{remark},</if>
+			 <if test="corpId != null">corp_id = #{corpId},</if>
+<!--  			update_time = sysdate() -->
  			update_time = GETDATE()
  		</set>
  		where user_id = #{userId}

@@ -2,7 +2,6 @@ package com.ruoyi.system.service.statement.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ruoyi.common.config.RuoYiConfig;
-import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.statement.StatementCfgType;
 import com.ruoyi.common.enums.statement.StatementType;
 import com.ruoyi.common.u8c.AssVo;
@@ -18,6 +17,8 @@ import com.ruoyi.system.service.StatementCfgService;
 import com.ruoyi.system.service.statement.StatementReadService;
 import com.ruoyi.system.service.statement.StatementWriteService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +43,7 @@ import java.util.stream.Stream;
 public class BmZjLxCsStmtGen extends StatementGenProcess {
     public static final String SUPPLEMENT = "supplement";
     public static final String ORIGINAL_HEAD_INDEX_MAP = "originalHeadIndexMap";
+    private static final Logger log = LoggerFactory.getLogger(BmZjLxCsStmtGen.class);
 
     @Resource
     private StatementReadService statementReadService;
@@ -49,12 +51,10 @@ public class BmZjLxCsStmtGen extends StatementGenProcess {
     private StatementWriteService statementWriteService;
     @Resource
     private StatementCfgService statementCfgService;
-    @Resource
+    @Resource(name = "requestThreadPoolExecutor")
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Resource
     private BmZjLxCsStmtExtractor bmZjLxCsStmtExtractor;
-    @Resource
-    private RedisCache redisCache;
 
     @Override
     public String confirmStmtTplName(StmtGenContext context) {

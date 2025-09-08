@@ -176,6 +176,7 @@ public class StatementWriteService {
      * @param isFormula  是否公式
      */
     private void setValue(Sheet sheet, Integer rowI, Integer colI, Object value, Boolean isFormula) {
+//        log.info("sheet: {}, ri: {}, ci: {}, value: {}", sheet.getSheetName(), rowI, colI, value);
         if (value == null) return;
         // 确认单元格
         Row row = sheet.getRow(rowI);
@@ -258,6 +259,12 @@ public class StatementWriteService {
         } else if (Objects.equals(1, writeType)) {
             // 格式化
             res = String.format(cell.getStringCellValue(), np);
+        } else if (Objects.equals(2, writeType)) {
+            // 追加在最后
+            res = cell.getStringCellValue() + np;
+        } else if (Objects.equals(3, writeType)) {
+            // 追加在前面
+            res = np + cell.getStringCellValue();
         } else {
             res = np;
         }

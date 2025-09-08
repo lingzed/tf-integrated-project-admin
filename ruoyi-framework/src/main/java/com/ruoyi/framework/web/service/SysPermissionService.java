@@ -3,6 +3,8 @@ package com.ruoyi.framework.web.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.alibaba.fastjson2.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -15,7 +17,7 @@ import com.ruoyi.system.service.ISysRoleService;
 
 /**
  * 用户权限处理
- * 
+ *
  * @author ruoyi
  */
 @Component
@@ -29,7 +31,7 @@ public class SysPermissionService
 
     /**
      * 获取角色数据权限
-     * 
+     *
      * @param user 用户信息
      * @return 角色权限信息
      */
@@ -50,7 +52,7 @@ public class SysPermissionService
 
     /**
      * 获取菜单数据权限
-     * 
+     *
      * @param user 用户信息
      * @return 菜单权限信息
      */

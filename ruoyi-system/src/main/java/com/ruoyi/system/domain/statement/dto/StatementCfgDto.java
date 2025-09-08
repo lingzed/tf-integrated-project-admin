@@ -1,10 +1,12 @@
 package com.ruoyi.system.domain.statement.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.common.constant.MsgConstants;
 import com.ruoyi.common.utils.StmtRelatedUtil;
 import com.ruoyi.common.validated.group.Add;
 import com.ruoyi.common.validated.group.Edit;
 import com.ruoyi.common.validated.json.JsonCont;
+import com.ruoyi.common.xss.Xss;
 
 import javax.validation.constraints.*;
 
@@ -14,11 +16,13 @@ public class StatementCfgDto {
     private String cfgDescription;  // 配置项的描述
     private String corpCode;    // 配置项所属的公司编码
     private String statementCode;   // 配置项对应的报表的编码
+    @JsonIgnore
     private String statementName;   // 配置项对应的报表的名称
     private String cfgContent;   // 配置项的json内容
     private Short contentJsonType;  // 配置内容的json类型
     private Short cfgType;    // 配置项的类型, 0: 行列头索引配置, 1: 工作表写入配置, 2: 查询配置, 3: 行列头映射数据集配置
     private String other;   // key中的[:其他信息]
+    @JsonIgnore
     private Integer lockVersion;    // 乐观锁
 
     @NotNull(message = MsgConstants.ID_REQUIRED, groups = {Edit.class})
@@ -35,6 +39,7 @@ public class StatementCfgDto {
         return StmtRelatedUtil.getCfgCode(statementCode, cfgType, corpCode, other);
     }
 
+    @Xss
     public String getCfgDescription() {
         return cfgDescription;
     }
@@ -45,6 +50,7 @@ public class StatementCfgDto {
 
     @NotNull(message = MsgConstants.CORP_CODE_REQUIRED, groups = {Add.class})
     @NotBlank(message = MsgConstants.CORP_CODE_REQUIRED, groups = {Add.class})
+    @Xss
     public String getCorpCode() {
         return corpCode;
     }
@@ -56,6 +62,7 @@ public class StatementCfgDto {
     @NotNull(message = MsgConstants.STMT_CODE_REQUIRED, groups = {Add.class})
     @NotBlank(message = MsgConstants.STMT_CODE_REQUIRED, groups = {Add.class})
     @Pattern(regexp = "^[^\\u4e00-\\u9fa5]*$", message = MsgConstants.STMT_CODE_NOT_CHINESE, groups = {Add.class})
+    @Xss
     public String getStatementCode() {
         return statementCode;
     }
@@ -64,8 +71,6 @@ public class StatementCfgDto {
         this.statementCode = statementCode;
     }
 
-    @NotNull(message = MsgConstants.STMT_NAME_REQUIRED, groups = {Add.class})
-    @NotBlank(message = MsgConstants.STMT_NAME_REQUIRED, groups = {Add.class})
     public String getStatementName() {
         return statementName;
     }
@@ -77,6 +82,7 @@ public class StatementCfgDto {
     @NotNull(message = MsgConstants.CFG_CONT_REQUIRED, groups = {Add.class, Edit.class})
     @NotBlank(message = MsgConstants.CFG_CONT_REQUIRED, groups = {Add.class, Edit.class})
     @JsonCont(message = MsgConstants.CFG_CONT_NOT_LEGAL_FORMAT, groups = {Add.class, Edit.class})
+    @Xss
     public String getCfgContent() {
         return cfgContent;
     }
@@ -107,6 +113,7 @@ public class StatementCfgDto {
         this.cfgType = cfgType;
     }
 
+    @Xss
     public String getOther() {
         return other;
     }

@@ -49,7 +49,7 @@ public class GlJyStmtGen extends StatementGenProcess {
     private StatementCfgService statementCfgService;
     @Resource
     private GlJyStmtExtractor glJyStmtExtractor;
-    @Resource
+    @Resource(name = "requestThreadPoolExecutor")
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Override
@@ -124,8 +124,8 @@ public class GlJyStmtGen extends StatementGenProcess {
                 // 预查询，当前页会尽可能拉到最大(10000)，这样只会返回实际的数据总数，然后再通过这个总数计算出总页码
                 long total = U8CApiUtil.getVoucherTotal(corp, subjCode, start, end);
                 long pageTotal = (total + pageSize - 1) / pageSize;
-                for (long i = 1; i <= pageTotal; i++) {
-                    int page = (int) i;
+                for (int i = 1; i <= pageTotal; i++) {
+                    int page = i;
                     CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                         List<Detail> dataList = getDetailList(subjSet, corp, subjCode, start, end, page, pageSize);
                         if (CollectionUtils.isEmpty(dataList)) return;

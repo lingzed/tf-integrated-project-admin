@@ -14,6 +14,8 @@ public class U8CApiConstants {
     public static final String API_URL_QUERY_SUBJECT = U8C_API_BASE_ADDRESS + "/u8cloud/api/uapbd/accsubj/query"; // 查询科目
     public static final String API_URL_QUERY_VOUCHER = U8C_API_BASE_ADDRESS + "/u8cloud/api/gl/voucher/pagequery"; // 查询凭证
     public static final String API_URL_QUERY_SUBJ_BALANCE = U8C_API_BASE_ADDRESS + "/u8cloud/api/gl/voucher/balancebookquery"; // 查询科目余额
+    public static final String API_URL_QUERY_CUSTOMER = U8C_API_BASE_ADDRESS + "/u8cloud/api/uapbd/custdoc/query"; // 客户查询
+    public static final String API_URL_QUERY_JOB_BAS_FIL = U8C_API_BASE_ADDRESS + "/u8cloud/api/uapbd/bdjobbasfil/query"; // 项目查询
     // 请求必须携带的头
     public static final String REQUEST_HEAD_USER_CODE = "usercode"; // 请求头usercode
     public static final String HEAD_VAL_USER_CODE = "002"; // usercode的值

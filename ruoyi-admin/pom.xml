@@ -96,7 +96,7 @@
                 </configuration>   
            </plugin>   
         </plugins>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>tf-integration</finalName>
     </build>
 
 </project>

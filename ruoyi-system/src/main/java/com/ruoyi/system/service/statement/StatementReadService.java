@@ -34,9 +34,11 @@ import java.util.stream.Collectors;
 public class StatementReadService {
     private static final Logger log = LoggerFactory.getLogger(StatementReadService.class);
     // 从括号中取值的正则
-    private static final Pattern pattern1 = Pattern.compile("(?:（|\\()([^（）()]+)(?:）|\\))");
+    private static final Pattern PATTERN1 = Pattern.compile("(?:（|\\()([^（）()]+)(?:）|\\))");
     // 获取-之前的正则
-    private static final Pattern pattern2 = Pattern.compile("^[^-]+");
+//    private static final Pattern PATTERN2 = Pattern.compile("^[^-]+");
+    // 从【】中取值的正则
+    private static final Pattern PATTERN3 = Pattern.compile("【([^【】]+)】");
 
     /**
      * 从报表模板文件中提取出行列头索引的映射
@@ -324,6 +326,8 @@ public class StatementReadService {
                 return process1(value);
             case 2:
                 return process2(value);
+            case 3:
+                return process3(value);
             default:
                 return value;
         }
@@ -335,7 +339,7 @@ public class StatementReadService {
      * @return
      */
     private String process1(String value) {
-        Matcher matcher = pattern1.matcher(value);
+        Matcher matcher = PATTERN1.matcher(value);
         if (matcher.find()) {
             return matcher.group(1);
         }
@@ -349,12 +353,32 @@ public class StatementReadService {
      * @return
      */
     private String process2(String value) {
-        if (!value.contains("-")) return null;
-        Matcher matcher = pattern2.matcher(value);
-        if (matcher.find()) {
-            return matcher.group(0);
+//        if (!value.contains("-")) return null;
+//        Matcher matcher = PATTERN2.matcher(value);
+//        if (matcher.find()) {
+//            return matcher.group(0);
+//        }
+        int i = value.indexOf("-");
+        if (i == -1) {
+            log.warn("未匹配到-之前的内容，原始值: {}", value);
+            return null;
+        }else{
+           return value.substring(0, i);
         }
-        log.warn("未匹配到-之前的内容，原始值: {}", value);
+    }
+
+    /**
+     * 处理方式3，查找【】内的值
+     * @param value
+     * @return
+     */
+    private String process3(String value) {
+        if (!value.contains("【") || !value.contains("】")) return null;
+        Matcher matcher = PATTERN3.matcher(value);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        log.warn("未匹配到【】内的内容，原始值: {}", value);
         return null;
     }
 

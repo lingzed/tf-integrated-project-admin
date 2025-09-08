@@ -11,6 +11,7 @@ public class StatementQueryCfg {
     private List<String> queryCorpList; // 查询的公司编码列表
     private List<String> queryCostList; // 查询的客商编码列表
     private Set<String> querySubjList;  // 查询的科目编码列表
+    private Set<String> supHeadSubjList;    // 补充头(行头或列头)列表中的科目编码
     private List<String> queryDeptList; // 查询的部门编码列表
     private List<String> rowHdQueryRemove; // 用行头中的值作为参数去查询时，需要移除的值
     private List<String> colHdQueryRemove; // 用列头中的值作为参数去查询时，需要移除的值
@@ -87,5 +88,13 @@ public class StatementQueryCfg {
 
     public void setSubjCodeTo(String subjCodeTo) {
         this.subjCodeTo = subjCodeTo;
+    }
+
+    public Set<String> getSupHeadSubjList() {
+        return supHeadSubjList;
+    }
+
+    public void setSupHeadSubjList(Set<String> supHeadSubjList) {
+        this.supHeadSubjList = supHeadSubjList;
     }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ruoyi.common.enums.statement.StatementTpl;
-import com.ruoyi.common.utils.PeriodUtil;
+import com.ruoyi.common.u8c.warpper.FinancialDataWrapper;
 
 import java.time.YearMonth;
 import java.util.HashMap;
@@ -20,8 +20,15 @@ public class StmtGenContext {
     //    private static final String PERIOD = "@@#*>PERIOD";
     private static final String STMT_TPL = "@@#*>STMT_TPL";
     private static final String RC_HEAD_MAP_DATA = "@@#*>RC_HEAD_MAP_DATA";
+    private static final String P_CORP_CODE = "@@#*>P_CORP_CODE";
+    private static final String USER_ID = "@@#*>USER_ID";
+    private static final String CUSTOMER_CODE = "@@#*>CUSTOMER_CODE";
+    private static final String CUSTOMER_NAME = "@@#*>CUSTOMER_NAME";
+    private static final String JOB_PJT_CODE = "@@#*>JOB_PJT_CODE";
+    private static final String JOB_PJT_NAME = "@@#*>JOB_PJT_NAME";
 
     private final Map<String, String> innerMap = new HashMap<>();
+    private final Map<String, FinancialDataWrapper> innerFData = new HashMap<>();
     private static final ObjectMapper mapper = new ObjectMapper();
 
     static {
@@ -75,12 +82,20 @@ public class StmtGenContext {
         put(CORP_CODE, corpCode);
     }
 
+    public void setPCorpCode(String corpCode) {
+        put(P_CORP_CODE, corpCode);
+    }
+
     /**
      * 获取公司编码
      * @return
      */
     public String corpCode() {
         return get(CORP_CODE, String.class);
+    }
+
+    public String pCorpCode() {
+        return get(P_CORP_CODE, String.class);
     }
 
     /**
@@ -154,5 +169,103 @@ public class StmtGenContext {
      */
     public int periodMonth() {
         return period().getMonthValue();
+    }
+
+    /**
+     * 当前用户的userId
+     * @return
+     */
+    public long userId() {
+        return get(USER_ID, Long.class);
+    }
+
+    /**
+     * 设置当前用户的userId
+     * @param userId
+     */
+    public void setUserId(long userId) {
+        put(USER_ID, userId);
+    }
+
+    /**
+     * 设置财务数据
+     * @param key
+     * @param fData
+     */
+    public void setFData(String key, FinancialDataWrapper fData) {
+        innerFData.put(key, fData);
+    }
+
+    /**
+     * 获取财务数据
+     * @param key
+     * @return
+     */
+    public FinancialDataWrapper fData(String key) {
+        return innerFData.get(key);
+    }
+
+    /**
+     * 设置客户编码
+     * @param ctrCode
+     */
+    public void setCustomerCode(String ctrCode) {
+        put(CUSTOMER_CODE, ctrCode);
+    }
+
+    /**
+     * 获取客户编码
+     * @return
+     */
+    public String customerCode() {
+        return get(CUSTOMER_CODE, String.class);
+    }
+
+    /**
+     * 设置客户编码
+     * @param ctrName
+     */
+    public void setCustomerName(String ctrName) {
+        put(CUSTOMER_NAME, ctrName);
+    }
+
+    /**
+     * 获取客户名称
+     * @return
+     */
+    public String customerName() {
+        return get(CUSTOMER_NAME, String.class);
+    }
+
+    /**
+     * 设置项目编码
+     * @param jobPjtCode
+     */
+    public void setJobPjtCode(String jobPjtCode) {
+        put(JOB_PJT_CODE, jobPjtCode);
+    }
+
+    /**
+     * 获取项目编码
+     * @return
+     */
+    public String jobPjtCode() {
+        return get(JOB_PJT_CODE, String.class);
+    }
+
+    /**
+     * 设置项目名称
+     * @param jobPjtName
+     */
+    public void setJobPjtName(String jobPjtName) {
+        put(JOB_PJT_NAME, jobPjtName);
+    }
+
+    /**
+     * 获取项目名称
+     * @return
+     */
+    public String jobPjtName() {
+        return get(JOB_PJT_NAME, String.class);
     }
 }

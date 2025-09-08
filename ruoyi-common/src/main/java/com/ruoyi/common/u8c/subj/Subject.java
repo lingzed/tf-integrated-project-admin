@@ -52,4 +52,11 @@ public class Subject {
     public int hashCode() {
         return Objects.hash(subjCode, subjName, subjDirection);
     }
+
+    public static Subject of(String subjCode, String subjName) {
+        Subject subject = new Subject();
+        subject.setSubjCode(subjCode);
+        subject.setSubjName(subjName);
+        return subject;
+    }
 }

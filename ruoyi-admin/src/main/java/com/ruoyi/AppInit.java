@@ -1,27 +1,28 @@
 package com.ruoyi;
 
 import com.alibaba.fastjson2.JSON;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.enums.statement.StatementCfgType;
-import com.ruoyi.common.enums.statement.StatementTpl;
-import com.ruoyi.common.utils.StmtRelatedUtil;
-import com.ruoyi.common.utils.json.JsonUtil;
-import com.ruoyi.system.domain.statement.RowColHeadIndex;
-import com.ruoyi.system.domain.statement.cfg.RowColHeadIndexCfg;
+import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.u8c.JobBasFil;
+import com.ruoyi.common.u8c.cust.CustomerWrapper;
+import com.ruoyi.common.u8c.query.DetailWrapperQuery;
+import com.ruoyi.common.u8c.warpper.DetailWrapper;
+import com.ruoyi.common.utils.PeriodUtil;
+import com.ruoyi.common.utils.U8CApiUtil;
+import com.ruoyi.system.service.DetailWrapperService;
 import com.ruoyi.system.service.StatementCfgService;
-import com.ruoyi.system.service.statement.StatementReadService;
 import com.ruoyi.system.service.SubjectService;
+import com.ruoyi.system.service.statement.KhDzWriteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * 启动时初始化
@@ -33,46 +34,54 @@ public class AppInit implements ApplicationRunner {
     private StatementCfgService statementCfgService;
     @Resource
     private SubjectService subjectService;
-    @Resource
-    private StatementReadService statementReadService;
-    @Resource
-    private RedisCache redisCache;
+    @Resource(name = "threadPoolTaskExecutor")
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        initStatementCfg();
-//        initAllSubjCache();
-//        test();
+    public void run(ApplicationArguments args) {
+        Boolean initStmtCfg = RuoYiConfig.InitCache.getInitStmtCfg();
+        if (initStmtCfg != null && initStmtCfg) {
+            threadPoolTaskExecutor.submit(initStatementCfg());
+        }
+        Boolean initSubj = RuoYiConfig.InitCache.getInitSubj();
+        if (initSubj != null && initSubj) {
+            threadPoolTaskExecutor.submit(initAllSubjCache());
+        }
     }
 
     /**
      * 初始化所有的报表配置缓存
      */
-    @Log(title = "报表管理", businessType = BusinessType.INIT)
-    private void initStatementCfg() {
-        long start = System.currentTimeMillis();
-        log.info("开始初始化所有报表配置缓存...");
-        statementCfgService.refreshAllCfg();
-        long end = System.currentTimeMillis();
-        log.info("报表配置缓存初始化完成，耗时{}ms", end - start);
+    private Runnable initStatementCfg() {
+        return () -> {
+            try {
+                long start = System.currentTimeMillis();
+                log.info("开始初始化所有报表配置缓存...");
+                statementCfgService.refreshAllCfg();
+                long end = System.currentTimeMillis();
+                log.info("报表配置缓存初始化完成，耗时{}ms", end - start);
+            } catch (Exception e) {
+                log.error("报表配置初始化失败: {}", e.getMessage(), e);
+            }
+        };
     }
 
-    @Log(title = "科目管理", businessType = BusinessType.INIT)
-    private void initAllSubjCache() {
-        long start = System.currentTimeMillis();
-        log.info("开始初始化所有科目缓存...");
-        subjectService.refreshAllSubjCache();
-        long end = System.currentTimeMillis();
-        log.info("科目缓存初始化完成，耗时{}ms", end - start);
-    }
-
-    public void test() throws Exception {
-        StatementTpl statementTpl = StatementTpl.TPL_GGS_GSF_SR_QK_TJB_A;
-        String stmtTplFile = StmtRelatedUtil.getStmtTplFile(statementTpl);
-        String cfgKey = StmtRelatedUtil.getCfgCode(statementTpl, StatementCfgType.ROW_COL_HEAD_INDEX_CFG);
-        String cacheStr = redisCache.getCacheStr(cfgKey);
-        List<RowColHeadIndexCfg> listFromJson = JsonUtil.getListFromJson(cacheStr, RowColHeadIndexCfg.class);
-        Map<String, RowColHeadIndex> rcHeadMap = statementReadService.extractRowColHead(stmtTplFile, listFromJson);
-        log.info("rcHeadMap: {}", JSON.toJSONString(rcHeadMap));
+    /**
+     * 初始化所有科目的缓存
+     *
+     * @return
+     */
+    private Runnable initAllSubjCache() {
+        return () -> {
+            try {
+                long start = System.currentTimeMillis();
+                log.info("开始初始化所有科目缓存...");
+                subjectService.refreshAllSubjCache();
+                long end = System.currentTimeMillis();
+                log.info("科目缓存初始化完成，耗时{}ms", end - start);
+            } catch (Exception e) {
+                log.error("科目缓存初始化失败: {}", e.getMessage(), e);
+            }
+        };
     }
 }

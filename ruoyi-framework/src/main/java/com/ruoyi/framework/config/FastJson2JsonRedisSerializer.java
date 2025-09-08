@@ -1,6 +1,8 @@
 package com.ruoyi.framework.config;
 
 import java.nio.charset.Charset;
+
+import com.alibaba.fastjson2.writer.ObjectWriterProvider;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 import com.alibaba.fastjson2.JSON;

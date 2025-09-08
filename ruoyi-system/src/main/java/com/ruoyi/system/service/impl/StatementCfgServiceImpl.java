@@ -1,7 +1,10 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.constant.MsgConstants;
+import com.ruoyi.common.core.domain.entity.Corporation;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.statement.StatementCfgType;
+import com.ruoyi.common.enums.statement.StatementType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.json.JsonUtil;
@@ -10,6 +13,7 @@ import com.ruoyi.system.domain.statement.po.StatementCfg;
 import com.ruoyi.system.domain.statement.dto.StatementCfgDto;
 import com.ruoyi.system.domain.statement.query.StatementCfgQuery;
 import com.ruoyi.system.domain.statement.vo.StatementCfgVo;
+import com.ruoyi.system.mapper.CorporationMapper;
 import com.ruoyi.system.mapper.StatementCfgMapper;
 import com.ruoyi.system.service.StatementCfgService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -22,21 +26,20 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Service
 public class StatementCfgServiceImpl implements StatementCfgService {
     private static final Logger log = LoggerFactory.getLogger(StatementCfgServiceImpl.class);
-    private static final Map<String, String> oldJsonStrCache = new ConcurrentHashMap<>();
     private static final ReentrantLock lock = new ReentrantLock();
 
     @Resource
     private StatementCfgMapper statementCfgMapper;
-
     @Resource
     private RedisCache redisCache;
+    @Resource
+    private CorporationMapper corporationMapper;
 
     /**
      * 条件查询
@@ -83,7 +86,12 @@ public class StatementCfgServiceImpl implements StatementCfgService {
      */
     @Override
     public List<StatementCfgVo> findVoListByCondition(StatementCfgQuery statementCfgQuery) {
-        return findListByCondition(statementCfgQuery).stream().map(e -> {
+        return toVoList(findListByCondition(statementCfgQuery));
+    }
+
+    @Override
+    public List<StatementCfgVo> toVoList(List<StatementCfg> list) {
+        return list.stream().map(e -> {
             StatementCfgVo voBean = new StatementCfgVo();
             BeanUtils.copyProperties(e, voBean);
             return voBean;
@@ -263,6 +271,7 @@ public class StatementCfgServiceImpl implements StatementCfgService {
         boolean isChanged = !newContent.equals(byId.getCfgContent());
 
         // 更新数据库
+        dto.setLockVersion(byId.getLockVersion());
         if (edit(dto) == 0) {
             throw new ServiceException(MsgConstants.UPDATE_FAILED);
         }
@@ -280,10 +289,28 @@ public class StatementCfgServiceImpl implements StatementCfgService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addStmtCfg(StatementCfgDto statementCfgDto) {
+        String stmtCode = statementCfgDto.getStatementCode();
+        StatementType typeByCode = StatementType.getByCode(stmtCode);
+        if (typeByCode == null) {
+            throw new ServiceException(String.format(MsgConstants.UNKNOWN_STMT_CODE_V1, stmtCode));
+        }
+        statementCfgDto.setStatementName(typeByCode.getStatementName());
+
+        Corporation corpByCode = corporationMapper.selectByCode(statementCfgDto.getCorpCode());
+        if (corpByCode == null) {
+            throw new ServiceException(MsgConstants.CORP_CODE_NOT_EXISTS);
+        }
+
         String cfgCode = statementCfgDto.getCfgCode();
         StatementCfg statementCfg = findByCfgCode(statementCfgDto.getCfgCode());
         if (statementCfg != null) {
-            throw new SecurityException(String.format(MsgConstants.STMT_CFG_CODE_EXIST, cfgCode));
+            throw new ServiceException(String.format(MsgConstants.STMT_CFG_CODE_EXIST, cfgCode));
+        }
+
+        String cfgDescription = statementCfgDto.getCfgDescription();
+        if (StringUtils.isEmpty(cfgDescription)) {
+            String typeName = StatementCfgType.getByType(statementCfgDto.getCfgType()).getTypeName();
+            statementCfgDto.setCfgDescription(typeByCode.getStatementName() + "-" + corpByCode.getCorpCode() + "-" + typeName);
         }
 
         // 新增

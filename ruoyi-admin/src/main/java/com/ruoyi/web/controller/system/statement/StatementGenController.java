@@ -3,26 +3,18 @@ package com.ruoyi.web.controller.system.statement;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.MsgConstants;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.PeriodUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.system.domain.Corporation;
-import com.ruoyi.system.service.CorporationService;
 import com.ruoyi.system.service.DownloadService;
-import com.ruoyi.system.service.statement.impl.BmZjLxCsStmtGen;
-import com.ruoyi.system.service.statement.impl.CbJzStmtGen;
-import com.ruoyi.system.service.statement.impl.GgsGsfSrQkTjStmtGen;
-import com.ruoyi.system.service.statement.impl.GlJyStmtGen;
+import com.ruoyi.system.service.statement.impl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +22,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * 报表生成控制器
@@ -43,18 +36,230 @@ public class StatementGenController extends BaseStmtGenController {
     private RedisCache redisCache;
     @Resource
     private DownloadService downloadService;
-    @Resource
-    private CorporationService corporationService;
-    @Resource
+    @Resource(name = "threadPoolTaskExecutor")
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     /**
+     * 部门资金利息测算表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping(value = "/bm-zj-li-cs")
+    @PreAuthorize("@ss.hasPermi('stmt:bmZjLiCs:view')")
+    public SseEmitter bmZjLxCsStmtGen(String corpCode, String period) {
+        BmZjLxCsStmtGen stmtGen = SpringUtils.getBean(BmZjLxCsStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 成本结转表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/cb-jz")
+    @PreAuthorize("@ss.hasPermi('stmt:cbJz:view')")
+    public SseEmitter cbJzbStmtGen(String corpCode, String period) {
+        CbJzStmtGen stmtGen = SpringUtils.getBean(CbJzStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 各公司各省份收入情况统计表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/gss-gsf-sr-qk-tj")
+    @PreAuthorize("@ss.hasPermi('stmt:ggsGsfSrQkTj:view')")
+    public SseEmitter ggsGsfSrQkTjStmtGen(String corpCode, String period) {
+        GgsGsfSrQkTjStmtGen stmtGen = SpringUtils.getBean(GgsGsfSrQkTjStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 关联校验表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/gl-jy")
+    @PreAuthorize("@ss.hasPermi('stmt:glJy:view')")
+    public SseEmitter glJyStmtGen(String corpCode, String period) {
+        GlJyStmtGen stmtGen = SpringUtils.getBean(GlJyStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 客户收支差分析明细表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/kh-szc-fx-mx")
+    @PreAuthorize("@ss.hasPermi('stmt:khSzcFxMx:view')")
+    public SseEmitter khSzcFxMxStmtGen(String corpCode, String period) {
+        KhSzcFxMxStmtGen stmtGen = SpringUtils.getBean(KhSzcFxMxStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 客户余额表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/kh-ye")
+    @PreAuthorize("@ss.hasPermi('stmt:khYe:view')")
+    public SseEmitter khYeStmtGen(String corpCode, String period) {
+        KhYeStmtGen stmtGen = SpringUtils.getBean(KhYeStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 利润分解表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/lr-fj")
+    @PreAuthorize("@ss.hasPermi('stmt:lrFj:view')")
+    public SseEmitter lrFjStmtGen(String corpCode, String period) {
+        LrFjStmtGen stmtGen = SpringUtils.getBean(LrFjStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 人工成本及税金表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/rg-cb-sj")
+    @PreAuthorize("@ss.hasPermi('stmt:rgCbRjJc:view')")
+    public SseEmitter rgCbAndSjStmtGen(String corpCode, String period) {
+        RgCbAndSjStmtGen stmtGen = SpringUtils.getBean(RgCbAndSjStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 人工成本统计表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/rg-cb-tj")
+    @PreAuthorize("@ss.hasPermi('stmt:rgCbTj:view')")
+    public SseEmitter rgCbTjStmtGen(String corpCode, String period) {
+        RgCbTjStmtGen stmtGen = SpringUtils.getBean(RgCbTjStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 应收账款回款率表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/ys-zk-hkl")
+    @PreAuthorize("@ss.hasPermi('stmt:ysZkHkl:view')")
+    public SseEmitter ysZkHklStmtGen(String corpCode, String period) {
+        YsZkHklStmtGen stmtGen = SpringUtils.getBean(YsZkHklStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 预算执行情况监控表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/ys-zx-qk-jk")
+    @PreAuthorize("@ss.hasPermi('stmt:ysZxQkJk:view')")
+    public SseEmitter ysZxQkJkStmtGen(String corpCode, String period) {
+        YsZxQkJkStmtGen stmtGen = SpringUtils.getBean(YsZxQkJkStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 职能部门取数表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/zn-bm-qs")
+    @PreAuthorize("@ss.hasPermi('stmt:znBmQs:view')")
+    public SseEmitter znBmQsStmtGen(String corpCode, String period) {
+        ZnBmQsStmtGen stmtGen = SpringUtils.getBean(ZnBmQsStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 损益分解表生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/sy-fj")
+    @PreAuthorize("@ss.hasPermi('stmt:syFj:view')")
+    public SseEmitter syFjStmtGen(String corpCode, String period) {
+        SyFjStmtGen stmtGen = SpringUtils.getBean(SyFjStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 月报生成
+     *
+     * @param corpCode
+     * @param period
+     * @return
+     */
+    @GetMapping("/yb")
+    @PreAuthorize("@ss.hasPermi('stmt:yb:view')")
+    public SseEmitter ybStmtGen(String corpCode, String period) {
+        YbStmtGen stmtGen = SpringUtils.getBean(YbStmtGen.class);
+        return generateStmt(stmtGen, corpCode, period);
+    }
+
+    /**
+     * 客户对账单
+     *
+     * @param corpCodes
+     * @param ctrName
+     * @param jonPjtName
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @GetMapping("/kh-dzd")
+    @PreAuthorize("@ss.hasPermi('stmt:khDzd:view')")
+    public SseEmitter khDzdStmtGen(@RequestParam List<String> corpCodes, String ctrName, String jonPjtName, String startDate, String endDate) {
+        return generateKhDzd(corpCodes, ctrName, jonPjtName, startDate, endDate);
+    }
+
+    /**
      * 下载生成的报表文件
+     *
      * @param response
      * @param fileId
      * @throws IOException
      */
-    @GetMapping("/{fileId}")
+    @PostMapping("/download/{fileId}")
+    @PreAuthorize("@ss.hasPermi('stmt:gen:download')")
     public void download(HttpServletResponse response, @PathVariable String fileId) throws IOException {
         String cacheFilename = redisCache.getCacheStr(fileId);
         if (StringUtils.isEmpty(cacheFilename)) {
@@ -78,88 +283,8 @@ public class StatementGenController extends BaseStmtGenController {
     }
 
     /**
-     * 部门资金利息测算表生成
-     * @param corpCode
-     * @param period
-     * @return
-     */
-    @GetMapping("/bm-zj-li-cs")
-    public SseEmitter bmZjLxCsStmtGen(String corpCode, String period) {
-        checkCorpCode(corpCode);
-        checkPeriod(period);
-        BmZjLxCsStmtGen stmtGen = SpringUtils.getBean(BmZjLxCsStmtGen.class);
-        return generateStmt(stmtGen, corpCode, period);
-    }
-
-    /**
-     * 成本结转表生成
-     * @param corpCode
-     * @param period
-     * @return
-     */
-    @GetMapping("/cb-jz")
-    public SseEmitter cbJzbStmtGen(String corpCode, String period) {
-        checkCorpCode(corpCode);
-        checkPeriod(period);
-        CbJzStmtGen stmtGen = SpringUtils.getBean(CbJzStmtGen.class);
-        return generateStmt(stmtGen, corpCode, period);
-    }
-
-    /**
-     * 各公司各省份收入情况统计表生成
-     * @param corpCode
-     * @param period
-     * @return
-     */
-    @GetMapping("/gss-gsf-sr-qk-tj")
-    public SseEmitter ggsGsfSrQkTjStmtGen(String corpCode, String period) {
-        checkCorpCode(corpCode);
-        checkPeriod(period);
-        GgsGsfSrQkTjStmtGen stmtGen = SpringUtils.getBean(GgsGsfSrQkTjStmtGen.class);
-        return generateStmt(stmtGen, corpCode, period);
-    }
-
-    /**
-     * 关联校验表生成
-     * @param corpCode
-     * @param period
-     * @return
-     */
-    @GetMapping("/gl-jy")
-    public SseEmitter glJyStmtGen(String corpCode, String period) {
-        checkCorpCode(corpCode);
-        checkPeriod(period);
-        GlJyStmtGen stmtGen = SpringUtils.getBean(GlJyStmtGen.class);
-        return generateStmt(stmtGen, corpCode, period);
-    }
-
-    /**
-     * 校验公司编码
-     * @param corpCode
-     */
-    private void checkCorpCode(String corpCode) {
-        if (StringUtils.isEmpty(corpCode)) {
-            throw new ServiceException(MsgConstants.CORP_CODE_REQUIRED);
-        }
-        Corporation byCode = corporationService.findByCode(corpCode);
-        if (byCode == null) {
-            throw new SecurityException(MsgConstants.CORP_CODE_NOT_EXISTS);
-        }
-    }
-
-    /**
-     * 校验期间
-     * @param period
-     */
-    private void checkPeriod(String period) {
-        if (StringUtils.isEmpty(period)) {
-            throw new ServiceException(MsgConstants.PERIOD_REQUIRED);
-        }
-        PeriodUtil.check(period);
-    }
-
-    /**
      * 删除临时文件和缓存
+     *
      * @param path
      * @param fileId
      * @throws IOException

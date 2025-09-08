@@ -34,8 +34,18 @@ public enum StatementTpl {
     TPL_RG_CB_TJB_A(15, StatementType.RG_CB_TJB, "A", "通发公司人工成本统计表-模板.xlsx", ".xlsx", "通发公司人工成本统计表_%s.xlsx", "人工成本统计表模板，表中涵盖所有公司"),
     // 应收账款回款率
     TPL_YS_ZK_HKL_A0501(16, StatementType.YS_ZK_HKL, "A0501", "物业应收账款回款率A0501-模板.xls", ".xls", "物业应收账款回款率_A0501_%s.xls", "应收账款回款率，A0501公司的模板"),
+    // 预算执行情况监控表
+    TPL_YS_ZX_QK_JKB_A(17, StatementType.YS_ZX_QK_JKB, "A", "预算执行情况监控表（联通合并）-模板.xlsx", ".xlsx", "预算执行情况监控表（联通合并）_%s.xlsx", "预算执行情况监控表模板，表中涵盖所有公司"),
     // 职能部门取数表
-    TPL_ZN_BM_QSB_A(17, StatementType.ZN_BM_QSB, "A", "通发公司职能部门取数表A-模板.xls", ".xls", "通发公司职能部门取数表_%s.xls", "职能部门取数表模板，表中涵盖所有公司");
+    TPL_ZN_BM_QSB_A(18, StatementType.ZN_BM_QSB, "A", "通发公司职能部门取数表-模板.xls", ".xls", "通发公司职能部门取数表_%s.xls", "职能部门取数表模板，表中涵盖所有公司"),
+    // 通发损益分解表
+    TPL_SY_FJB_A(19, StatementType.SY_FJB, "A", "通发损益分解表-模板.xlsx", ".xlsx", "通发损益分解表_%s.xlsx", "通发损益分解表模板，表中涵盖所有公司"),
+    // 月报
+    TPL_YB_A01(20, StatementType.YB, "A01", "月报A01-模板.xlsx", ".xlsx", "通发月报_%s.xlsx", "通发月报，表中涵盖A01所有公司"),
+    TPL_YB_A02(21, StatementType.YB, "A02", "月报A02-模板.xlsx", ".xlsx", "监理月报_%s.xlsx", "监理月报，表中涵盖A02所有公司"),
+    TPL_YB_A03(22, StatementType.YB, "A03", "月报A03-模板.xlsx", ".xlsx", "铭信月报_%s.xlsx", "铭信月报，表中涵盖A03所有公司"),
+    TPL_YB_A04(23, StatementType.YB, "A04", "月报A04-模板.xlsx", ".xlsx", "广进月报_%s.xlsx", "广进月报，表中涵盖A04所有公司"),
+    TPL_YB_A05(24, StatementType.YB, "A05", "月报A05-模板.xlsx", ".xlsx", "物业月报_%s.xlsx", "物业月报，表中涵盖A05所有公司");
 
     private Integer tplId;  // 模板文件的id
     private StatementType statementType;    // 报表类型

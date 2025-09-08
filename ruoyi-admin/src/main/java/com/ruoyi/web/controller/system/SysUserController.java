@@ -187,7 +187,7 @@ public class SysUserController extends BaseController
     }
 
     /**
-     * 重置密码
+     * 权限更大的重置密码
      */
     @PreAuthorize("@ss.hasPermi('system:user:resetPwd')")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)

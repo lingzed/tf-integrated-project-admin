@@ -45,6 +45,13 @@ public interface StatementCfgService {
     List<StatementCfgVo> findVoListByCondition(StatementCfgQuery statementCfgQuery);
 
     /**
+     * 转换为VoList
+     * @param list
+     * @return
+     */
+    List<StatementCfgVo> toVoList(List<StatementCfg> list);
+
+    /**
      * 条件计数
      *
      * @param statementCfgQuery

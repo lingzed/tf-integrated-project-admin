@@ -8,7 +8,7 @@ import java.util.List;
 public class PeriodWriteCfg {
     private Boolean isWrite;                    // 是否写入期间
     private String dateFormat;                     // 日期格式，yyyy、yyyy-MM、yyyy-MM-dd
-    private Integer writeType;                  // 写入类型，0: 覆盖写入, 1: 格式化
+    private Integer writeType;                  // 写入类型，0: 覆盖写入, 1: 格式化, 2: 追加在最后, 2: 追加在前面
     private List<Integer> writeArea;            // 写入区域
     private Boolean isChinese;                  // 是否中文日期格式
 

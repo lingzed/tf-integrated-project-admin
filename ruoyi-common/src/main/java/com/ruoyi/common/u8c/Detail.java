@@ -7,6 +7,7 @@ import java.util.List;
  * 凭证分录
  */
 public class Detail {
+    private String detailindex;   // 分录号
     private String pk_detail;   // 分录的主键
     private String accsubj_code;    // 科目编码
     private String accsubj_name;    // 科目名称
@@ -78,5 +79,13 @@ public class Detail {
 
     public void setPeriod(String period) {
         this.period = period;
+    }
+
+    public String getDetailindex() {
+        return detailindex;
+    }
+
+    public void setDetailindex(String detailindex) {
+        this.detailindex = detailindex;
     }
 }

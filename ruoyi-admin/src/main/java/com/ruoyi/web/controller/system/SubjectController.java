@@ -7,16 +7,15 @@ import com.ruoyi.common.u8c.subj.SubjectVo;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.service.SubjectService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Set;
 
 @RestController
@@ -30,6 +29,7 @@ public class SubjectController extends BaseController {
      * @param response
      */
     @GetMapping("/export")
+    @PreAuthorize("@ss.hasAnyRoles('admin,gAdmin')")
     public void exportSubject(HttpServletResponse response) {
         Set<Subject> allSubject = subjectService.getAllSubjSet();
         ExcelUtil<Subject> util = new ExcelUtil<>(Subject.class);
@@ -41,6 +41,7 @@ public class SubjectController extends BaseController {
      * @return
      */
     @GetMapping("/refresh")
+    @PreAuthorize("@ss.hasAnyRoles('admin,gAdmin')")
     public AjaxResult refreshAllSubjCache() {
         subjectService.refreshAllSubjCache();
         return success();
@@ -52,6 +53,7 @@ public class SubjectController extends BaseController {
      * @return
      */
     @GetMapping("/{subj-code}")
+    @PreAuthorize("@ss.hasAnyRoles('admin,gAdmin')")
     public AjaxResult getSubject(@PathVariable("subj-code") String subjCode) {
         Subject subject = subjectService.getSubject(subjCode);
         if (subject == null) return success();

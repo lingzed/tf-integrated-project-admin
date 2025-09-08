@@ -13,13 +13,12 @@ import com.ruoyi.common.utils.file.MimeTypeUtils;
 import com.ruoyi.system.domain.statement.vo.StatementDataTplVo;
 import com.ruoyi.system.domain.statement.vo.StatementTplVo;
 import com.ruoyi.system.service.StatementTplService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +28,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/stmt-tpl")
+@PreAuthorize("@ss.hasAnyRoles('admin,gAdmin')")
 public class StatementTplController extends BaseController {
     @Resource
     private StatementTplService statementTplService;
@@ -61,7 +61,7 @@ public class StatementTplController extends BaseController {
     }
 
     /**
-     * 下载报表文件
+     * 下载报表模板文件
      * @param response
      * @param tplId
      * @throws IOException
@@ -160,6 +160,11 @@ public class StatementTplController extends BaseController {
         }
     }
 
+    /**
+     * 校验文件夹
+     * @param filename
+     * @return
+     */
     private String checkFilename(String filename) {
         filenameRequired(filename);
         String suffix = FileUtils.getNameSuffix(filename, false);
@@ -169,12 +174,21 @@ public class StatementTplController extends BaseController {
         return filename;
     }
 
+    /**
+     * 文件必填
+     * @param filename
+     */
     private void filenameRequired(String filename) {
         if (StringUtils.isEmpty(filename)) {
             throw new ServiceException(MsgConstants.FILENAME_REQUIRED);
         }
     }
 
+    /**
+     * 校验报表编码
+     * @param stmtCode
+     * @return
+     */
     private StatementType checkStmtCode(String stmtCode) {
         StatementType byCode = StatementType.getByCode(stmtCode);
         if (byCode == null) {
@@ -183,6 +197,11 @@ public class StatementTplController extends BaseController {
         return byCode;
     }
 
+    /**
+     * 校验报表模板
+     * @param tplId
+     * @return
+     */
     private StatementTpl checkStmtTpl(Integer tplId) {
         StatementTpl byTplId = StatementTpl.getByTplId(tplId);
         if (byTplId == null) {

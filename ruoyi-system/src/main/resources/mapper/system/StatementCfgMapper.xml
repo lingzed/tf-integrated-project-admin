@@ -16,6 +16,7 @@
         <result property="cfgType" column="cfg_type"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
+        <result property="lockVersion" column="lock_version" />
     </resultMap>
 
     <!-- id字段 -->
@@ -85,9 +86,12 @@
         <if test="orderBy != null and orderBy != ''">
             order by ${orderBy}
         </if>
-        <if test="index != null and size != null">
-            limit #{index}, #{size}
+        <if test="index != null and pageSize != null">
+            OFFSET #{index} ROWS FETCH NEXT #{pageSize} ROWS ONLY
         </if>
+<!--        <if test="index != null and size != null">-->
+<!--            limit #{index}, #{size}-->
+<!--        </if>-->
     </select>
 
     <!-- 条件查询总数量 -->

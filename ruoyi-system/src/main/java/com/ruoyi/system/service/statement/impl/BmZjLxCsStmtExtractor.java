@@ -140,6 +140,6 @@ public class BmZjLxCsStmtExtractor extends BaseStmtExtractor implements ValueExt
             BigDecimal ljd = accumBalance(aa, SubjDirection.CREDIT);    // 累计贷
             count = count.add(bdSubtract(ljj, ljd));
         }
-        return original.subtract(count);
+        return bdSubtract(original, count);
     }
 }

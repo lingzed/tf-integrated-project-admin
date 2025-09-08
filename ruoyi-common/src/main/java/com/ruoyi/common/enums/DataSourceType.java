@@ -2,11 +2,10 @@ package com.ruoyi.common.enums;
 
 /**
  * 数据源
- * 
+ *
  * @author ruoyi
  */
-public enum DataSourceType
-{
+public enum DataSourceType {
     /**
      * 主库
      */
@@ -15,5 +14,9 @@ public enum DataSourceType
     /**
      * 从库
      */
-    SLAVE
+    SLAVE,
+    /**
+     * u8could数据库
+     */
+    U8_CLOUD
 }

@@ -1,5 +1,6 @@
 package com.ruoyi.framework.config;
 
+import com.ruoyi.framework.security.filter.SseTicketAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,21 +22,22 @@ import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
 import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
 import com.ruoyi.framework.security.handle.LogoutSuccessHandlerImpl;
 
+import javax.annotation.Resource;
+
 /**
  * spring security配置
- * 
+ *
  * @author ruoyi
  */
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Configuration
-public class SecurityConfig
-{
+public class SecurityConfig {
     /**
      * 自定义用户认证逻辑
      */
     @Autowired
     private UserDetailsService userDetailsService;
-    
+
     /**
      * 认证失败处理类
      */
@@ -49,11 +51,17 @@ public class SecurityConfig
     private LogoutSuccessHandlerImpl logoutSuccessHandler;
 
     /**
+     * 临时票据认证过滤器
+     */
+    @Resource
+    private SseTicketAuthenticationFilter sseTicketAuthenticationFilter;
+
+    /**
      * token认证过滤器
      */
     @Autowired
-    private JwtAuthenticationTokenFilter authenticationTokenFilter;
-    
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
     /**
      * 跨域过滤器
      */
@@ -70,8 +78,7 @@ public class SecurityConfig
      * 身份验证实现
      */
     @Bean
-    public AuthenticationManager authenticationManager()
-    {
+    public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
@@ -94,46 +101,51 @@ public class SecurityConfig
      * authenticated       |   用户登录后可访问
      */
     @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception
-    {
+    protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-            // CSRF禁用，因为不使用session
-            .csrf(csrf -> csrf.disable())
-            // 禁用HTTP响应标头
-            .headers((headersCustomizer) -> {
-                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
-            })
-            // 认证失败处理类
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-            // 基于token，所以不需要session
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // 注解标记允许匿名访问的url
-            .authorizeHttpRequests((requests) -> {
-                permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
-                // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                requests.antMatchers("/login", "/register", "/captchaImage").permitAll()
-                    // 静态资源，可匿名访问
-                    .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
-                    .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
-                    // 除上面外的所有请求全部需要鉴权认证
-                    .anyRequest().authenticated();
-            })
-            // 添加Logout filter
-            .logout(logout -> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler))
-            // 添加JWT filter
-            .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
-            // 添加CORS filter
-            .addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class)
-            .addFilterBefore(corsFilter, LogoutFilter.class)
-            .build();
+                // CSRF禁用，因为不使用session
+                .csrf(csrf -> csrf.disable())
+                // 禁用HTTP响应标头
+                .headers((headersCustomizer) -> {
+                    headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
+                })
+                // 认证失败处理类
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                // 基于token，所以不需要session
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 注解标记允许匿名访问的url
+                .authorizeHttpRequests((requests) -> {
+                    permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
+                    // 对于登录login 注册register 验证码captchaImage 允许匿名访问
+                    requests.antMatchers("/login", "/register", "/captchaImage", "/tf/stmt-gen/**").permitAll()
+                            // 静态资源，可匿名访问
+                            .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
+                            .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
+                            // 除上面外的所有请求全部需要鉴权认证
+                            .anyRequest().authenticated();
+                })
+                // 添加Logout filter
+                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler))
+                // 这里有个巨大的坑，就是先后顺序，如果我把jwt过滤器和sse过滤器的顺序反过来就会报错，原因是因为把sse过滤器放到jwt过滤器前面，相当于
+                // 先注册sse过滤器，而sse过滤器在注册时要选择放到某个过滤器之前（addFilterBefore()的第二个参数），而这里我选择的是放到jwt过滤器之前
+                // 可问题是jwt过滤器是在sse过滤器之后注册的，也就是说在注册sse过滤器时，过滤链中还没有jwt过滤器，既然都没有jwt过滤，那么框架就找不到
+                // jwt过滤器而我又要放到jwt过滤器之前，这就矛盾了，所以会抛出过滤器顺序异常
+                // 添加JWT filter
+                .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                // 添加临时票据认证过滤器，优先于 JWT 过滤器
+                .addFilterBefore(sseTicketAuthenticationFilter, JwtAuthenticationTokenFilter.class)
+                // 添加CORS filter
+//                .addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class)
+                .addFilterBefore(corsFilter, SseTicketAuthenticationFilter.class)
+                .addFilterBefore(corsFilter, LogoutFilter.class)
+                .build();
     }
 
     /**
      * 强散列哈希加密实现
      */
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder()
-    {
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
